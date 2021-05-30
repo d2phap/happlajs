@@ -25,10 +25,12 @@ module.exports = {
     },
   },
   rules: {
-    'no-multiple-empty-lines': ["error", {
+    'no-multiple-empty-lines': ['error', {
       max: 2,
       maxEOF: 1,
       maxBOF: 1,
     }],
+    '@typescript-eslint/lines-between-class-members': 'off',
+    '@typescript-eslint/no-unused-vars': 'warn',
   },
 };

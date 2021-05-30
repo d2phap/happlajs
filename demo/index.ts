@@ -1,11 +1,13 @@
 
-import { author, user } from '@d2phap/happla';
+import { Board, InterpolationMode } from '@d2phap/happla';
 
-// print out the values
-const el = document.getElementById('content');
-el.innerHTML = `NPM module data:<br/>
-<pre>author = <code>${JSON.stringify(author, null, 2)}</code></pre>
-<pre>user = <code>${JSON.stringify(user, null, 2)}</code></pre
-`;
+const elBoard = document.getElementById('board');
+const elBoardContent = document.getElementById('boardContent');
+const board = new Board(elBoard, elBoardContent, {
+  //
+});
 
-console.log(author, user);
+board.imageRendering = InterpolationMode.Pixelated;
+console.log(board.imageRendering);
+
+board.enable();

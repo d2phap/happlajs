@@ -1,9 +1,0 @@
-/*! 
-  NPM package template v0.9.6
-  ----------------------------------------
-  Copyright (c) 2021 Duong Dieu Phap.
-  Homepage: https://github.com/d2phap/npm-package-template
-  Released under the MIT License.
-
-  License information can be found in LICENSE.txt.
- */
