@@ -2,11 +2,11 @@
 
 NPM package template with Typescript, Webpack, SCSS, EsLint, Babel
 
-Package url: https://www.npmjs.com/package/@d2phap/npm-package-template
+Package url: https://www.npmjs.com/package/@d2phap/happla
 
 Try the package:
 ```
-npm i @d2phap/npm-package-template
+npm i @d2phap/happla
 ```
 
 ## ☢️ Development note!

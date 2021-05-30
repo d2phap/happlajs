@@ -1,5 +1,5 @@
 
-import { author, user } from '@d2phap/npm-package-template';
+import { author, user } from '@d2phap/happla';
 
 // print out the values
 const el = document.getElementById('content');

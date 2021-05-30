@@ -1,8 +1,8 @@
 {
-  "name": "@d2phap/npm-package-template",
-  "displayName": "NPM package template",
-  "version": "1.0.0",
-  "description": "NPM package template with Typescript, Webpack, SCSS, EsLint, Babel",
+  "name": "@d2phap/happla",
+  "displayName": "JavaScript library for zooming and panning",
+  "version": "0.0.1",
+  "description": "JavaScript library for zooming and panning.",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "files": [
@@ -19,18 +19,21 @@
     "babel",
     "typescript",
     "eslint",
-    "webpack"
+    "webpack",
+    "zooming",
+    "panning",
+    "viewer"
   ],
   "author": "Duong Dieu Phap",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/d2phap/npm-package-template/issues"
+    "url": "https://github.com/d2phap/happla/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/d2phap/npm-package-template.git"
+    "url": "https://github.com/d2phap/happla.git"
   },
-  "homepage": "https://github.com/d2phap/npm-package-template",
+  "homepage": "https://github.com/d2phap/happla",
   "devDependencies": {
     "@babel/core": "^7.14.0",
     "@babel/preset-env": "^7.14.1",
