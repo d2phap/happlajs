@@ -103,4 +103,5 @@ typings/
 .tern-port
 .DS_Store
 
-
+dist/
+demo/dist/
