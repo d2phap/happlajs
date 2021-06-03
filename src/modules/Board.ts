@@ -59,6 +59,7 @@ export class Board {
     this.domMatrix.a = this.options.zoomFactor;
     this.domMatrix.d = this.options.zoomFactor;
 
+    this.ZoomTo = this.ZoomTo.bind(this);
     this.handleMouseWheel = this.handleMouseWheel.bind(this);
     this.enable = this.enable.bind(this);
     this.disable = this.disable.bind(this);
@@ -87,15 +88,25 @@ export class Board {
 
   private handleMouseWheel(e: WheelEvent) {
     // ignore horizontal scroll events
-    if (!this.options.allowZoom || e.deltaY === 0) {
+    if (e.deltaY === 0) {
       return;
     }
 
     const direction = e.deltaY < 0 ? 'up' : 'down';
-    const normalizedDeltaY = 1 + Math.abs(e.deltaY) / 200;
-    const currentZoomFactor = direction === 'up' ? normalizedDeltaY : 1 / normalizedDeltaY;
+    const normalizedDeltaY = 1 + Math.abs(e.deltaY) / 300; // speed
+    const delta = direction === 'up' ? normalizedDeltaY : 1 / normalizedDeltaY;
+    const newZoom = this.options.zoomFactor * delta;
+
+    this.ZoomTo(newZoom, e.clientX, e.clientY);
+  }
+
+  public ZoomTo(factor: number, x?: number, y?: number) {
+    if (!this.options.allowZoom) {
+      return;
+    }
+
     const previousZoom = this.options.zoomFactor;
-    this.options.zoomFactor *= currentZoomFactor;
+    this.options.zoomFactor = factor;
 
     // if larger than maxZoom, stay at previousZoom
     if (this.options.zoomFactor > this.options.maxZoom) {
@@ -117,13 +128,14 @@ export class Board {
       y: this.domMatrix.f,
     });
 
-    const x = e.clientX - this.elBoard.offsetLeft;
-    const y = e.clientY - this.elBoard.offsetTop;
+    const newX = (x ?? this.elBoard.offsetLeft) - this.elBoard.offsetLeft;
+    const newY = (y ?? this.elBoard.offsetTop) - this.elBoard.offsetTop;
+    const delta = factor / previousZoom;
 
     this.domMatrix = new DOMMatrix()
-      .translateSelf(x, y)
-      .scaleSelf(currentZoomFactor)
-      .translateSelf(-x, -y)
+      .translateSelf(newX, newY)
+      .scaleSelf(delta)
+      .translateSelf(-newX, -newY)
       .multiplySelf(this.domMatrix);
 
     // raise event onAfterZoomChanged
