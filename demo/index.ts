@@ -7,39 +7,60 @@ const board = new Board(elBoard, elBoardContent, {
   //
 });
 
-const img = document.getElementById('img');
 
-var poll = new Promise((resolve) => {
-  setInterval(function () {
-    if (img.naturalWidth) {
-      clearInterval(poll);
+board.imageRendering = InterpolationMode.Pixelated;
+board.waitForContentReady()
+  .then(async () => {
+    board.enable();
 
-      resolve({
-        width: img.naturalWidth,
-        height: img.naturalHeight,
-      });
-    }
-  }, 5);
-});
+    const w = elBoardContent.scrollWidth;
+    const h = elBoardContent.scrollHeight;
 
-poll.then(async ({ width, height }) => {
-  board.imageRendering = InterpolationMode.Pixelated;
-  console.log(board.imageRendering);
+    const widthScale = elBoard.clientWidth / w;
+    const heightScale = elBoard.clientHeight / h;
+    const scale = Math.min(widthScale, heightScale);
 
-  board.enable();
+    const x = (elBoard.offsetWidth - (w * scale)) / 2;
+    const y = (elBoard.offsetHeight - (h * scale)) / 2;
 
-  const w = elBoardContent.scrollWidth;
-  const h = elBoardContent.scrollHeight;
+    console.log(`${x}, ${y}`);
+    await board.zoomTo(scale, x, y);
+  });
 
-  const widthScale = elBoard.clientWidth / w;
-  const heightScale = elBoard.clientHeight / h;
-  const scale = Math.min(widthScale, heightScale);
+// const img = document.getElementById('img');
 
-  const x = (elBoard.offsetWidth - (w * scale)) / 2;
-  const y = (elBoard.offsetHeight - (h * scale)) / 2;
+// var poll = new Promise((resolve) => {
+//   setInterval(function () {
+//     if (img.naturalWidth) {
+//       clearInterval(poll);
 
-  console.log(`${x}, ${y}`);
-  await board.zoomTo(scale, x, y);
+//       resolve({
+//         width: img.naturalWidth,
+//         height: img.naturalHeight,
+//       });
+//     }
+//   }, 5);
+// });
 
-  // board.panTo(0, 0);
-});
+// poll.then(async ({ width, height }) => {
+//   board.imageRendering = InterpolationMode.Pixelated;
+//   console.log(board.imageRendering);
+
+//   board.enable();
+
+//   const w = elBoardContent.scrollWidth;
+//   const h = elBoardContent.scrollHeight;
+
+//   const widthScale = elBoard.clientWidth / w;
+//   const heightScale = elBoard.clientHeight / h;
+//   const scale = Math.min(widthScale, heightScale);
+
+//   const x = (elBoard.offsetWidth - (w * scale)) / 2;
+//   const y = (elBoard.offsetHeight - (h * scale)) / 2;
+
+//   console.log(`${x}, ${y}`);
+//   await board.zoomTo(scale, x, y);
+
+//   // board.panTo(0, 0);
+// });
+

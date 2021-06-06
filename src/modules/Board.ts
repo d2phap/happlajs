@@ -1,3 +1,4 @@
+import { pause } from './helpers';
 
 export type ZoomEventFunction = (zoomFactor: number, point: {
   x: number;
@@ -42,7 +43,7 @@ export class Board {
 
     allowZoom: true,
     minZoom: 0.05,
-    maxZoom: 2 ** 15,
+    maxZoom: 10_000,
     zoomFactor: 1,
     panOffset: { x: 0, y: 0},
 
@@ -77,6 +78,7 @@ export class Board {
     this.enable = this.enable.bind(this);
     this.disable = this.disable.bind(this);
     this.applyTransform = this.applyTransform.bind(this);
+    this.waitForContentReady = this.waitForContentReady.bind(this);
 
     this.onMouseWheel = this.onMouseWheel.bind(this);
     this.onPointerDown = this.onPointerDown.bind(this);
@@ -84,9 +86,12 @@ export class Board {
     this.onPointerMove = this.onPointerMove.bind(this);
 
     this.disable();
+
+    this.elBoardContent.style.transformOrigin = 'top left';
+    this.elBoard.style.overflow = 'hidden';
   }
 
-
+  //#region Getters & Setters
   get imageRendering() {
     return this.options.imageRendering;
   }
@@ -95,11 +100,13 @@ export class Board {
     this.options.imageRendering = value;
     this.elBoardContent.style.imageRendering = value;
   }
+  //#endregion
 
 
+  //#region Private functions
   private applyTransform(duration: number = 0) {
     return new Promise((resolve) => {
-      this.elBoardContent.style.transform = `${this.domMatrix}`;
+      this.elBoardContent.style.transform = `${this.domMatrix.toString()}`;
 
       // apply animation
       if (duration > 0) {
@@ -223,8 +230,10 @@ export class Board {
 
     this.applyTransform(duration);
   }
+  //#endregion
 
 
+  //#region Public functions
   public async panTo(x: number, y: number) {
     this.domMatrix.e = x;
     this.domMatrix.f = y;
@@ -246,10 +255,10 @@ export class Board {
     });
 
     // apply scale and translate value
-    this.domMatrix.a = factor;
-    this.domMatrix.d = factor;
-    this.domMatrix.e = x;
-    this.domMatrix.f = y;
+    this.domMatrix.a = this.options.zoomFactor;
+    this.domMatrix.d = this.options.zoomFactor;
+    this.domMatrix.e = x || 0;
+    this.domMatrix.f = y || 0;
 
     // raise event onAfterZoomChanged
     this.options.onAfterZoomChanged(this.options.zoomFactor, {
@@ -261,9 +270,6 @@ export class Board {
   }
 
   public enable() {
-    this.elBoardContent.style.transformOrigin = 'top left';
-    this.elBoard.style.overflow = 'hidden';
-
     this.applyTransform();
 
     this.elBoard.addEventListener('wheel', this.onMouseWheel, { passive: true });
@@ -282,4 +288,17 @@ export class Board {
     this.elBoard.removeEventListener("pointerleave", this.onPointerUp);
     this.elBoard.removeEventListener("pointermove", this.onPointerMove);
   }
+
+  public async waitForContentReady() {
+    this.elBoardContent.style.opacity = '0';
+    const list = this.elBoardContent.querySelectorAll('img');
+    const imgs = Array.from(list);
+
+    while(imgs.some(i => !i.complete)) {
+      await pause(10);
+    }
+
+    this.elBoardContent.style.opacity = '1';
+  }
+  //#endregion
 }
