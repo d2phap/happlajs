@@ -52,14 +52,14 @@ export class Board {
     minZoom: 0.05,
     maxZoom: 10_000,
     zoomFactor: 1,
-    panOffset: { x: 0, y: 0},
+    panOffset: { x: 0, y: 0 },
 
     allowPan: true,
 
     onBeforeZoomChanged: () => ({}),
     onAfterZoomChanged: () => ({}),
     onAfterTransformed: () => ({}),
-    onAfterPanOffsetChanged: () =>({}),
+    onAfterPanOffsetChanged: () => ({}),
   };
 
   constructor(board: HTMLElement, boardContent: HTMLElement, options?: BoardOptions) {
@@ -102,7 +102,7 @@ export class Board {
     this.elBoard.style.overflow = 'hidden';
   }
 
-  //#region Getters & Setters
+  // #region Getters & Setters
   get imageRendering() {
     return this.options.imageRendering;
   }
@@ -111,10 +111,10 @@ export class Board {
     this.options.imageRendering = value;
     this.elBoardContent.style.imageRendering = value;
   }
-  //#endregion
+  // #endregion
 
 
-  //#region Private functions
+  // #region Private functions
   private applyTransform(duration: number = 0) {
     return new Promise((resolve) => {
       this.elBoardContent.style.transform = `${this.domMatrix.toString()}`;
@@ -193,7 +193,7 @@ export class Board {
 
     this.options.onAfterPanOffsetChanged({
       x: this.domMatrix.e,
-      y: this.domMatrix.f
+      y: this.domMatrix.f,
     });
   }
 
@@ -255,7 +255,7 @@ export class Board {
       this.arrowUpDown,
       this.arrowRightDown,
       this.arrowDownDown,
-    ].every(keyDown => !keyDown)) {
+    ].every((keyDown) => !keyDown)) {
       this.stopMoving();
     }
   }
@@ -330,10 +330,10 @@ export class Board {
     cancelAnimationFrame(this.animationFrame);
     this.moving = false;
   }
-  //#endregion
+  // #endregion
 
 
-  //#region Public functions
+  // #region Public functions
   public async panTo(x: number, y: number) {
     this.domMatrix.e = x;
     this.domMatrix.f = y;
@@ -374,10 +374,10 @@ export class Board {
 
     this.elBoard.addEventListener('wheel', this.onMouseWheel, { passive: true });
 
-    this.elBoard.addEventListener("pointerdown", this.onPointerDown);
-    this.elBoard.addEventListener("pointerup", this.onPointerUp);
-    this.elBoard.addEventListener("pointerleave", this.onPointerUp);
-    this.elBoard.addEventListener("pointermove", this.onPointerMove);
+    this.elBoard.addEventListener('pointerdown', this.onPointerDown);
+    this.elBoard.addEventListener('pointerup', this.onPointerUp);
+    this.elBoard.addEventListener('pointerleave', this.onPointerUp);
+    this.elBoard.addEventListener('pointermove', this.onPointerMove);
 
     this.elBoard.addEventListener('keydown', this.onKeyDown);
     this.elBoard.addEventListener('keyup', this.onKeyUp);
@@ -386,10 +386,10 @@ export class Board {
   public disable() {
     this.elBoard.removeEventListener('mousewheel', this.onMouseWheel);
 
-    this.elBoard.removeEventListener("pointerdown", this.onPointerDown)
-    this.elBoard.removeEventListener("pointerup", this.onPointerUp)
-    this.elBoard.removeEventListener("pointerleave", this.onPointerUp);
-    this.elBoard.removeEventListener("pointermove", this.onPointerMove);
+    this.elBoard.removeEventListener('pointerdown', this.onPointerDown);
+    this.elBoard.removeEventListener('pointerup', this.onPointerUp);
+    this.elBoard.removeEventListener('pointerleave', this.onPointerUp);
+    this.elBoard.removeEventListener('pointermove', this.onPointerMove);
 
     this.elBoard.removeEventListener('keydown', this.onKeyDown);
     this.elBoard.removeEventListener('keyup', this.onKeyUp);
@@ -400,11 +400,12 @@ export class Board {
     const list = this.elBoardContent.querySelectorAll('img');
     const imgs = Array.from(list);
 
-    while(imgs.some(i => !i.complete)) {
+    while (imgs.some((i) => !i.complete)) {
+      // eslint-disable-next-line
       await pause(10);
     }
 
     this.elBoardContent.style.opacity = '1';
   }
-  //#endregion
+  // #endregion
 }
