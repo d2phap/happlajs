@@ -99,6 +99,7 @@ export class Board {
     this.disable();
 
     this.elBoardContent.style.transformOrigin = 'top left';
+    this.elBoard.style.touchAction = 'none';
     this.elBoard.style.overflow = 'hidden';
   }
 
