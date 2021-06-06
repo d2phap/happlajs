@@ -22,21 +22,24 @@ var poll = new Promise((resolve) => {
   }, 5);
 });
 
-poll.then(({ width, height }) => {
+poll.then(async ({ width, height }) => {
   board.imageRendering = InterpolationMode.Pixelated;
   console.log(board.imageRendering);
 
   board.enable();
 
-  const scaleWidth = elBoard.clientWidth / width;
-  const scaleHeight = elBoard.clientHeight / height;
-  const scale = Math.min(scaleWidth, scaleHeight);
+  const w = elBoardContent.scrollWidth;
+  const h = elBoardContent.scrollHeight;
 
-  const x = ((elBoard.clientWidth) * scale) / 2;
-  const y = ((elBoard.clientHeight) * scale) / 2;
+  const widthScale = elBoard.clientWidth / w;
+  const heightScale = elBoard.clientHeight / h;
+  const scale = Math.min(widthScale, heightScale);
+
+  const x = (elBoard.offsetWidth - (w * scale)) / 2;
+  const y = (elBoard.offsetHeight - (h * scale)) / 2;
 
   console.log(`${x}, ${y}`);
-  board.zoomTo(scale, x, y);
+  await board.zoomTo(scale, x, y);
 
-  board.panTo(-200, -200);
+  // board.panTo(0, 0);
 });
