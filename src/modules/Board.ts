@@ -37,6 +37,13 @@ export class Board {
   private domMatrix: DOMMatrix;
   private isPointerDown = false;
 
+  private animationFrame: number;
+  private moving = false;
+  private arrowLeftDown = false;
+  private arrowRightDown = false;
+  private arrowUpDown = false;
+  private arrowDownDown = false;
+
   private options: BoardOptions;
   private defaultOptions: BoardOptions = {
     imageRendering: InterpolationMode.Pixelated,
@@ -70,13 +77,15 @@ export class Board {
     this.domMatrix.e = this.options.panOffset.x;
     this.domMatrix.f = this.options.panOffset.y;
 
-    this.zoomTo = this.zoomTo.bind(this);
     this.zoomDistance = this.zoomDistance.bind(this);
-    this.panTo = this.panTo.bind(this);
     this.moveDistance = this.moveDistance.bind(this);
+    this.startMoving = this.startMoving.bind(this);
+    this.stopMoving = this.stopMoving.bind(this);
 
     this.enable = this.enable.bind(this);
     this.disable = this.disable.bind(this);
+    this.zoomTo = this.zoomTo.bind(this);
+    this.panTo = this.panTo.bind(this);
     this.applyTransform = this.applyTransform.bind(this);
     this.waitForContentReady = this.waitForContentReady.bind(this);
 
@@ -84,6 +93,8 @@ export class Board {
     this.onPointerDown = this.onPointerDown.bind(this);
     this.onPointerUp = this.onPointerUp.bind(this);
     this.onPointerMove = this.onPointerMove.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
+    this.onKeyUp = this.onKeyUp.bind(this);
 
     this.disable();
 
@@ -186,6 +197,69 @@ export class Board {
     });
   }
 
+  private onKeyDown(event: KeyboardEvent) {
+    switch (event.key) {
+      case 'ArrowLeft':
+        this.arrowLeftDown = true;
+        if (!this.moving) {
+          this.moving = true;
+          this.startMoving();
+        }
+        break;
+      case 'ArrowUp':
+        this.arrowUpDown = true;
+        if (!this.moving) {
+          this.moving = true;
+          this.startMoving();
+        }
+        break;
+      case 'ArrowRight':
+        this.arrowRightDown = true;
+        if (!this.moving) {
+          this.moving = true;
+          this.startMoving();
+        }
+        break;
+      case 'ArrowDown':
+        this.arrowDownDown = true;
+        if (!this.moving) {
+          this.moving = true;
+          this.startMoving();
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  private onKeyUp(event: KeyboardEvent) {
+    switch (event.key) {
+      case 'ArrowLeft':
+        this.arrowLeftDown = false;
+        break;
+      case 'ArrowUp':
+        this.arrowUpDown = false;
+        break;
+      case 'ArrowRight':
+        this.arrowRightDown = false;
+        break;
+      case 'ArrowDown':
+        this.arrowDownDown = false;
+        break;
+      default:
+        break;
+    }
+
+    if ([
+      this.arrowLeftDown,
+      this.arrowUpDown,
+      this.arrowRightDown,
+      this.arrowDownDown,
+    ].every(keyDown => !keyDown)) {
+      this.stopMoving();
+    }
+  }
+
   private moveDistance(x = 0, y = 0) {
     // Update the transform coordinates with the distance from origin and current position
     this.domMatrix.e += x;
@@ -229,6 +303,32 @@ export class Board {
     });
 
     this.applyTransform(duration);
+  }
+
+  private startMoving() {
+    const speed = Math.ceil(this.elBoardContent.clientWidth / 100);
+    let x = 0;
+    let y = 0;
+
+    if (this.arrowLeftDown && !this.arrowRightDown) {
+      x = speed;
+    } else if (!this.arrowLeftDown && this.arrowRightDown) {
+      x = -speed;
+    }
+
+    if (this.arrowUpDown && !this.arrowDownDown) {
+      y = speed;
+    } else if (!this.arrowUpDown && this.arrowDownDown) {
+      y = -speed;
+    }
+
+    this.moveDistance(x, y);
+    this.animationFrame = requestAnimationFrame(this.startMoving);
+  }
+
+  private stopMoving() {
+    cancelAnimationFrame(this.animationFrame);
+    this.moving = false;
   }
   //#endregion
 
@@ -278,6 +378,9 @@ export class Board {
     this.elBoard.addEventListener("pointerup", this.onPointerUp);
     this.elBoard.addEventListener("pointerleave", this.onPointerUp);
     this.elBoard.addEventListener("pointermove", this.onPointerMove);
+
+    this.elBoard.addEventListener('keydown', this.onKeyDown);
+    this.elBoard.addEventListener('keyup', this.onKeyUp);
   }
 
   public disable() {
@@ -287,6 +390,9 @@ export class Board {
     this.elBoard.removeEventListener("pointerup", this.onPointerUp)
     this.elBoard.removeEventListener("pointerleave", this.onPointerUp);
     this.elBoard.removeEventListener("pointermove", this.onPointerMove);
+
+    this.elBoard.removeEventListener('keydown', this.onKeyDown);
+    this.elBoard.removeEventListener('keyup', this.onKeyUp);
   }
 
   public async waitForContentReady() {
