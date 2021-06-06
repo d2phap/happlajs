@@ -33,8 +33,10 @@ poll.then(({ width, height }) => {
   const scale = Math.min(scaleWidth, scaleHeight);
 
   const x = ((elBoard.clientWidth) * scale) / 2;
-  const y = ((elBoard.offsetTop - elBoard.scrollHeight) * scale) / 2;
+  const y = ((elBoard.clientHeight) * scale) / 2;
 
   console.log(`${x}, ${y}`);
-  board.ZoomTo(scale, x, y);
+  board.zoomTo(scale, x, y);
+
+  board.panTo(-200, -200);
 });
