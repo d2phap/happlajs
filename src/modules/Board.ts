@@ -160,6 +160,7 @@ export class Board {
       return;
     }
 
+    this.elBoard.setPointerCapture(e.pointerId);
     this.isPointerDown = true;
 
     // We get the pointer position on click so we can get the value once the user starts to drag
@@ -187,6 +188,7 @@ export class Board {
       return;
     }
 
+    this.elBoard.releasePointerCapture(e.pointerId);
     this.isPointerDown = false;
 
     this.options.panOffset.x += e.clientX - this.options.panOffset.x;
