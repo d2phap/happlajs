@@ -638,6 +638,7 @@
                   switch (_a.label) {
                     case 0:
                       this.elBoardContent.style.opacity = '0';
+                      this.elBoardContent.style.transition = 'opacity 500ms ease';
                       list = this.elBoardContent.querySelectorAll('img');
                       imgs = Array.from(list);
                       _a.label = 1;
@@ -663,6 +664,7 @@
 
                     case 3:
                       this.elBoardContent.style.opacity = '1';
+                      this.elBoardContent.style.transition = '';
                       return [2
                       /*return*/
                       ];
@@ -684,12 +686,12 @@
           \********************************/
 
         /***/
-        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_24017__) => {
-          __nested_webpack_require_24017__.r(__webpack_exports__);
+        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_24165__) => {
+          __nested_webpack_require_24165__.r(__webpack_exports__);
           /* harmony export */
 
 
-          __nested_webpack_require_24017__.d(__webpack_exports__, {
+          __nested_webpack_require_24165__.d(__webpack_exports__, {
             /* harmony export */
             "pause": () =>
             /* binding */
@@ -733,7 +735,7 @@
 
       /******/
 
-      function __nested_webpack_require_25250__(moduleId) {
+      function __nested_webpack_require_25398__(moduleId) {
         /******/
         // Check if module is in cache
 
@@ -771,7 +773,7 @@
 
         /******/
 
-        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_25250__);
+        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_25398__);
         /******/
 
         /******/
@@ -799,11 +801,11 @@
         // define getter functions for harmony exports
 
         /******/
-        __nested_webpack_require_25250__.d = (exports, definition) => {
+        __nested_webpack_require_25398__.d = (exports, definition) => {
           /******/
           for (var key in definition) {
             /******/
-            if (__nested_webpack_require_25250__.o(definition, key) && !__nested_webpack_require_25250__.o(exports, key)) {
+            if (__nested_webpack_require_25398__.o(definition, key) && !__nested_webpack_require_25398__.o(exports, key)) {
               /******/
               Object.defineProperty(exports, key, {
                 enumerable: true,
@@ -831,7 +833,7 @@
 
       (() => {
         /******/
-        __nested_webpack_require_25250__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+        __nested_webpack_require_25398__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
         /******/
 
       })();
@@ -849,7 +851,7 @@
         // define __esModule on exports
 
         /******/
-        __nested_webpack_require_25250__.r = exports => {
+        __nested_webpack_require_25398__.r = exports => {
           /******/
           if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
             /******/
@@ -880,11 +882,11 @@
         /*!*********************!*\
           !*** ./src/main.ts ***!
           \*********************/
-        __nested_webpack_require_25250__.r(__webpack_exports__);
+        __nested_webpack_require_25398__.r(__webpack_exports__);
         /* harmony export */
 
 
-        __nested_webpack_require_25250__.d(__webpack_exports__, {
+        __nested_webpack_require_25398__.d(__webpack_exports__, {
           /* harmony export */
           "Board": () =>
           /* reexport safe */
@@ -900,7 +902,7 @@
         /* harmony import */
 
 
-        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_25250__(
+        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_25398__(
         /*! ./modules/Board */
         "./src/modules/Board.ts");
       })();
@@ -1036,10 +1038,14 @@ var elBoardContent = document.getElementById('boardContent');
 var elZoom = document.getElementById('elZoom');
 var elX = document.getElementById('elX');
 var elY = document.getElementById('elY');
+var elWidth = document.getElementById('elWidth');
+var elHeight = document.getElementById('elHeight');
 var onAfterZoomChanged = function (factor, x, y) {
     elZoom.innerText = factor;
     elX.innerText = x;
     elY.innerText = y;
+    elWidth.innerText = elBoardContent.clientWidth * factor;
+    elHeight.innerText = elBoardContent.clientHeight * factor;
 };
 var onPanning = function (x, y) {
     elX.innerText = x;
@@ -1064,7 +1070,6 @@ board.waitForContentReady()
                 scale = Math.min(widthScale, heightScale);
                 x = (elBoard.offsetWidth - (w * scale)) / 2;
                 y = (elBoard.offsetHeight - (h * scale)) / 2;
-                console.log(x + ", " + y);
                 return [4 /*yield*/, board.zoomTo(scale, x, y)];
             case 1:
                 _a.sent();

@@ -405,6 +405,7 @@ export class Board {
 
   public async waitForContentReady() {
     this.elBoardContent.style.opacity = '0';
+    this.elBoardContent.style.transition = 'opacity 500ms ease';
     const list = this.elBoardContent.querySelectorAll('img');
     const imgs = Array.from(list);
 
@@ -414,6 +415,7 @@ export class Board {
     }
 
     this.elBoardContent.style.opacity = '1';
+    this.elBoardContent.style.transition = '';
   }
   // #endregion
 }

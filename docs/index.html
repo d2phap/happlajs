@@ -14,6 +14,20 @@
       display: flex;
       flex-direction: column;
     }
+    .info {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 100;
+      font-family: monospace;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 3px;
+      background-color: rgba(255,255,255, 0.1);
+      backdrop-filter: blur(20px);
+      transition: all ease 200ms;
+    }
 
     #board {
       margin: auto;
@@ -41,12 +55,12 @@
   </style>
 </head>
 <body>
-  <div>
-    <pre>
-      Zoom: <code id="elZoom"></code>
-      X: <code id="elX"></code>
-      Y: <code id="elY"></code>
-    </pre>
+  <div class="info">
+    <div>Zoom: <span id="elZoom"></span></div>
+    <div>X: <span id="elX"></span></div>
+    <div>Y: <span id="elY"></span></div>
+    <div>Width: <span id="elWidth"></span></div>
+    <div>Height: <span id="elHeight"></span></div>
   </div>
   <div id="board" tabindex="0">
     <div id="boardContent">

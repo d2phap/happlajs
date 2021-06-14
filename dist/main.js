@@ -428,6 +428,7 @@ var Board = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         this.elBoardContent.style.opacity = '0';
+                        this.elBoardContent.style.transition = 'opacity 500ms ease';
                         list = this.elBoardContent.querySelectorAll('img');
                         imgs = Array.from(list);
                         _a.label = 1;
@@ -441,6 +442,7 @@ var Board = /** @class */ (function () {
                         return [3 /*break*/, 1];
                     case 3:
                         this.elBoardContent.style.opacity = '1';
+                        this.elBoardContent.style.transition = '';
                         return [2 /*return*/];
                 }
             });

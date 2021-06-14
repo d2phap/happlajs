@@ -6,12 +6,16 @@ const elBoardContent = document.getElementById('boardContent');
 const elZoom = document.getElementById('elZoom');
 const elX = document.getElementById('elX');
 const elY = document.getElementById('elY');
+const elWidth = document.getElementById('elWidth');
+const elHeight = document.getElementById('elHeight');
 
 
 const onAfterZoomChanged: ZoomEventFunction = (factor: number, x: number, y: number) => {
   elZoom.innerText = factor;
   elX.innerText = x;
   elY.innerText = y;
+  elWidth.innerText = elBoardContent.clientWidth * factor;
+  elHeight.innerText = elBoardContent.clientHeight * factor;
 };
 
 const onPanning: PanEventFunction = (x: number, y: number) => {
@@ -41,7 +45,6 @@ board.waitForContentReady()
     const x = (elBoard.offsetWidth - (w * scale)) / 2;
     const y = (elBoard.offsetHeight - (h * scale)) / 2;
 
-    console.log(`${x}, ${y}`);
     await board.zoomTo(scale, x, y);
   });
 
