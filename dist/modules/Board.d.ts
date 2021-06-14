@@ -17,6 +17,8 @@ export interface BoardOptions {
         y: number;
     };
     imageRendering?: InterpolationMode;
+    onBeforeContentReady?: () => void;
+    onContentReady?: () => void;
     onBeforeZoomChanged?: ZoomEventFunction;
     onAfterZoomChanged?: ZoomEventFunction;
     onAfterTransformed?: TransformEventFunction;

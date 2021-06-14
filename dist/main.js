@@ -118,11 +118,13 @@ var Board = /** @class */ (function () {
             zoomFactor: 1,
             panOffset: { x: 0, y: 0 },
             allowPan: true,
-            onBeforeZoomChanged: function () { return ({}); },
-            onAfterZoomChanged: function () { return ({}); },
-            onAfterTransformed: function () { return ({}); },
-            onPanning: function () { return ({}); },
-            onAfterPanned: function () { return ({}); },
+            onBeforeContentReady: function () { },
+            onContentReady: function () { },
+            onBeforeZoomChanged: function () { },
+            onAfterZoomChanged: function () { },
+            onAfterTransformed: function () { },
+            onPanning: function () { },
+            onAfterPanned: function () { },
         };
         this.elBoard = board;
         this.elBoardContent = boardContent;
@@ -152,6 +154,8 @@ var Board = /** @class */ (function () {
         this.elBoardContent.style.transformOrigin = 'top left';
         this.elBoard.style.touchAction = 'none';
         this.elBoard.style.overflow = 'hidden';
+        // emit event onBeforeContentReady
+        this.options.onBeforeContentReady();
     }
     Object.defineProperty(Board.prototype, "imageRendering", {
         // #region Getters & Setters
@@ -427,8 +431,6 @@ var Board = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        this.elBoardContent.style.opacity = '0';
-                        this.elBoardContent.style.transition = 'opacity 500ms ease';
                         list = this.elBoardContent.querySelectorAll('img');
                         imgs = Array.from(list);
                         _a.label = 1;
@@ -441,8 +443,8 @@ var Board = /** @class */ (function () {
                         _a.sent();
                         return [3 /*break*/, 1];
                     case 3:
-                        this.elBoardContent.style.opacity = '1';
-                        this.elBoardContent.style.transition = '';
+                        // emit event onContentReady
+                        this.options.onContentReady();
                         return [2 /*return*/];
                 }
             });

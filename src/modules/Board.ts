@@ -21,6 +21,9 @@ export interface BoardOptions {
 
   imageRendering?: InterpolationMode;
 
+  onBeforeContentReady?: () => void;
+  onContentReady?: () => void;
+
   onBeforeZoomChanged?: ZoomEventFunction;
   onAfterZoomChanged?: ZoomEventFunction;
   onAfterTransformed?: TransformEventFunction;
@@ -54,12 +57,15 @@ export class Board {
 
     allowPan: true,
 
-    onBeforeZoomChanged: () => ({}),
-    onAfterZoomChanged: () => ({}),
-    onAfterTransformed: () => ({}),
+    onBeforeContentReady: () => {},
+    onContentReady: () => {},
 
-    onPanning: () => ({}),
-    onAfterPanned: () => ({}),
+    onBeforeZoomChanged: () => {},
+    onAfterZoomChanged: () => {},
+    onAfterTransformed: () => {},
+
+    onPanning: () => {},
+    onAfterPanned: () => {},
   };
 
   constructor(board: HTMLElement, boardContent: HTMLElement, options?: BoardOptions) {
@@ -101,6 +107,9 @@ export class Board {
     this.elBoardContent.style.transformOrigin = 'top left';
     this.elBoard.style.touchAction = 'none';
     this.elBoard.style.overflow = 'hidden';
+
+    // emit event onBeforeContentReady
+    this.options.onBeforeContentReady();
   }
 
   // #region Getters & Setters
@@ -404,8 +413,6 @@ export class Board {
   }
 
   public async waitForContentReady() {
-    this.elBoardContent.style.opacity = '0';
-    this.elBoardContent.style.transition = 'opacity 500ms ease';
     const list = this.elBoardContent.querySelectorAll('img');
     const imgs = Array.from(list);
 
@@ -414,8 +421,8 @@ export class Board {
       await pause(10);
     }
 
-    this.elBoardContent.style.opacity = '1';
-    this.elBoardContent.style.transition = '';
+    // emit event onContentReady
+    this.options.onContentReady();
   }
   // #endregion
 }
