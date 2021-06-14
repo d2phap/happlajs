@@ -1,12 +1,8 @@
 import { pause } from './helpers';
 
-export type ZoomEventFunction = (zoomFactor: number, point: {
-  x: number;
-  y: number;
-}) => void;
-
+export type ZoomEventFunction = (zoomFactor: number, x: number, y: number) => void;
 export type TransformEventFunction = (matrix: DOMMatrix) => void;
-export type PanningEventFunction = ({ x, y }: { x: number, y: number }) => void;
+export type PanEventFunction = (x: number, y: number) => void;
 
 export enum InterpolationMode {
   Pixelated = 'pixelated',
@@ -28,7 +24,9 @@ export interface BoardOptions {
   onBeforeZoomChanged?: ZoomEventFunction;
   onAfterZoomChanged?: ZoomEventFunction;
   onAfterTransformed?: TransformEventFunction;
-  onAfterPanOffsetChanged?: PanningEventFunction;
+
+  onPanning?: PanEventFunction;
+  onAfterPanned?: PanEventFunction;
 }
 
 export class Board {
@@ -50,7 +48,7 @@ export class Board {
 
     allowZoom: true,
     minZoom: 0.05,
-    maxZoom: 10_000,
+    maxZoom: 150,
     zoomFactor: 1,
     panOffset: { x: 0, y: 0 },
 
@@ -59,7 +57,9 @@ export class Board {
     onBeforeZoomChanged: () => ({}),
     onAfterZoomChanged: () => ({}),
     onAfterTransformed: () => ({}),
-    onAfterPanOffsetChanged: () => ({}),
+
+    onPanning: () => ({}),
+    onAfterPanned: () => ({}),
   };
 
   constructor(board: HTMLElement, boardContent: HTMLElement, options?: BoardOptions) {
@@ -112,35 +112,14 @@ export class Board {
     this.options.imageRendering = value;
     this.elBoardContent.style.imageRendering = value;
   }
+
+  get zoomFactor() {
+    return this.options.zoomFactor;
+  }
   // #endregion
 
 
   // #region Private functions
-  private applyTransform(duration: number = 0) {
-    return new Promise((resolve) => {
-      this.elBoardContent.style.transform = `${this.domMatrix.toString()}`;
-
-      // apply animation
-      if (duration > 0) {
-        const transition = `transform ${duration}ms ease, opacity ${duration}ms ease`;
-        this.elBoardContent.style.transition = transition;
-
-        setTimeout(() => {
-          // raise event
-          this.options.onAfterTransformed(this.domMatrix);
-          resolve(undefined);
-        }, duration);
-      }
-      else {
-        this.elBoardContent.style.transition = '';
-
-        // raise event
-        this.options.onAfterTransformed(this.domMatrix);
-        resolve(undefined);
-      }
-    });
-  }
-
   private onMouseWheel(e: WheelEvent) {
     // ignore horizontal scroll events
     if (e.deltaY === 0) {
@@ -181,6 +160,8 @@ export class Board {
 
     this.options.panOffset.x = event.clientX;
     this.options.panOffset.y = event.clientY;
+
+    this.options.onPanning(this.domMatrix.e, this.domMatrix.f);
   }
 
   private onPointerUp(e: PointerEvent) {
@@ -194,10 +175,7 @@ export class Board {
     this.options.panOffset.x += e.clientX - this.options.panOffset.x;
     this.options.panOffset.y += e.clientY - this.options.panOffset.y;
 
-    this.options.onAfterPanOffsetChanged({
-      x: this.domMatrix.e,
-      y: this.domMatrix.f,
-    });
+    this.options.onAfterPanned(this.domMatrix.e, this.domMatrix.f);
   }
 
   private onKeyDown(event: KeyboardEvent) {
@@ -276,34 +254,42 @@ export class Board {
       return;
     }
 
-    this.options.zoomFactor *= delta;
+    const newZoom = this.options.zoomFactor * delta;
+    const oldZoom = this.options.zoomFactor;
 
     // restrict the zoom factor
     this.options.zoomFactor = Math.min(
-      Math.max(this.options.minZoom, this.options.zoomFactor),
+      Math.max(this.options.minZoom, newZoom),
       this.options.maxZoom,
     );
 
     // raise event onBeforeZoomChanged
-    this.options.onBeforeZoomChanged(this.options.zoomFactor, {
-      x: this.domMatrix.e,
-      y: this.domMatrix.f,
-    });
+    this.options.onBeforeZoomChanged(oldZoom, this.domMatrix.e, this.domMatrix.f);
 
     const newX = (dx ?? this.elBoard.offsetLeft) - this.elBoard.offsetLeft;
     const newY = (dy ?? this.elBoard.offsetTop) - this.elBoard.offsetTop;
+    let newDelta = delta;
+
+    // check zoom -> maxZoom
+    if (newZoom > this.options.maxZoom) {
+      newDelta = this.options.maxZoom / oldZoom;
+      this.options.zoomFactor = this.options.maxZoom;
+    }
+
+    // check zoom -> minZoom
+    else if (newZoom < this.options.minZoom) {
+      newDelta = this.options.minZoom / oldZoom;
+      this.options.zoomFactor = this.options.minZoom;
+    }
 
     this.domMatrix = new DOMMatrix()
       .translateSelf(newX, newY)
-      .scaleSelf(delta)
+      .scaleSelf(newDelta)
       .translateSelf(-newX, -newY)
       .multiplySelf(this.domMatrix);
 
     // raise event onAfterZoomChanged
-    this.options.onAfterZoomChanged(this.options.zoomFactor, {
-      x: this.domMatrix.e,
-      y: this.domMatrix.f,
-    });
+    this.options.onAfterZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
 
     this.applyTransform(duration);
   }
@@ -352,10 +338,7 @@ export class Board {
     );
 
     // raise event onBeforeZoomChanged
-    this.options.onBeforeZoomChanged(this.options.zoomFactor, {
-      x: this.domMatrix.e,
-      y: this.domMatrix.f,
-    });
+    this.options.onBeforeZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
 
     // apply scale and translate value
     this.domMatrix.a = this.options.zoomFactor;
@@ -364,12 +347,34 @@ export class Board {
     this.domMatrix.f = y || 0;
 
     // raise event onAfterZoomChanged
-    this.options.onAfterZoomChanged(this.options.zoomFactor, {
-      x: this.domMatrix.e,
-      y: this.domMatrix.f,
-    });
+    this.options.onAfterZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
 
     await this.applyTransform(duration);
+  }
+
+  public applyTransform(duration: number = 0) {
+    return new Promise((resolve) => {
+      this.elBoardContent.style.transform = `${this.domMatrix.toString()}`;
+
+      // apply animation
+      if (duration > 0) {
+        const transition = `transform ${duration}ms ease, opacity ${duration}ms ease`;
+        this.elBoardContent.style.transition = transition;
+
+        setTimeout(() => {
+          // raise event
+          this.options.onAfterTransformed(this.domMatrix);
+          resolve(undefined);
+        }, duration);
+      }
+      else {
+        this.elBoardContent.style.transition = '';
+
+        // raise event
+        this.options.onAfterTransformed(this.domMatrix);
+        resolve(undefined);
+      }
+    });
   }
 
   public enable() {

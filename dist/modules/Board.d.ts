@@ -1,12 +1,6 @@
-export declare type ZoomEventFunction = (zoomFactor: number, point: {
-    x: number;
-    y: number;
-}) => void;
+export declare type ZoomEventFunction = (zoomFactor: number, x: number, y: number) => void;
 export declare type TransformEventFunction = (matrix: DOMMatrix) => void;
-export declare type PanningEventFunction = ({ x, y }: {
-    x: number;
-    y: number;
-}) => void;
+export declare type PanEventFunction = (x: number, y: number) => void;
 export declare enum InterpolationMode {
     Pixelated = "pixelated",
     Auto = "auto",
@@ -26,7 +20,8 @@ export interface BoardOptions {
     onBeforeZoomChanged?: ZoomEventFunction;
     onAfterZoomChanged?: ZoomEventFunction;
     onAfterTransformed?: TransformEventFunction;
-    onAfterPanOffsetChanged?: PanningEventFunction;
+    onPanning?: PanEventFunction;
+    onAfterPanned?: PanEventFunction;
 }
 export declare class Board {
     private elBoardContent;
@@ -44,7 +39,7 @@ export declare class Board {
     constructor(board: HTMLElement, boardContent: HTMLElement, options?: BoardOptions);
     get imageRendering(): InterpolationMode;
     set imageRendering(value: InterpolationMode);
-    private applyTransform;
+    get zoomFactor(): number;
     private onMouseWheel;
     private onPointerDown;
     private onPointerMove;
@@ -57,6 +52,7 @@ export declare class Board {
     private stopMoving;
     panTo(x: number, y: number): Promise<void>;
     zoomTo(factor: number, x?: number, y?: number, duration?: number): Promise<void>;
+    applyTransform(duration?: number): Promise<unknown>;
     enable(): void;
     disable(): void;
     waitForContentReady(): Promise<void>;

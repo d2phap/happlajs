@@ -12,6 +12,7 @@
       margin: auto;
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
     }
 
     #board {
@@ -40,6 +41,13 @@
   </style>
 </head>
 <body>
+  <div>
+    <pre>
+      Zoom: <code id="elZoom"></code>
+      X: <code id="elX"></code>
+      Y: <code id="elY"></code>
+    </pre>
+  </div>
   <div id="board" tabindex="0">
     <div id="boardContent">
       <img id="img" src="https://c.wallhere.com/photos/49/41/anime_anime_boys_anime_men_Black_Clover_Asta_Yuno_Noelle_Silva_Yami_Sukehiro-1966873.jpg!d" />

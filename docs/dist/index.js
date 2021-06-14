@@ -253,7 +253,7 @@
                 imageRendering: InterpolationMode.Pixelated,
                 allowZoom: true,
                 minZoom: 0.05,
-                maxZoom: 10000,
+                maxZoom: 150,
                 zoomFactor: 1,
                 panOffset: {
                   x: 0,
@@ -269,7 +269,10 @@
                 onAfterTransformed: function () {
                   return {};
                 },
-                onAfterPanOffsetChanged: function () {
+                onPanning: function () {
+                  return {};
+                },
+                onAfterPanned: function () {
                   return {};
                 }
               };
@@ -314,37 +317,15 @@
               },
               enumerable: false,
               configurable: true
+            });
+            Object.defineProperty(Board.prototype, "zoomFactor", {
+              get: function () {
+                return this.options.zoomFactor;
+              },
+              enumerable: false,
+              configurable: true
             }); // #endregion
             // #region Private functions
-
-            Board.prototype.applyTransform = function (duration) {
-              var _this = this;
-
-              if (duration === void 0) {
-                duration = 0;
-              }
-
-              return new Promise(function (resolve) {
-                _this.elBoardContent.style.transform = "" + _this.domMatrix.toString(); // apply animation
-
-                if (duration > 0) {
-                  var transition = "transform " + duration + "ms ease, opacity " + duration + "ms ease";
-                  _this.elBoardContent.style.transition = transition;
-                  setTimeout(function () {
-                    // raise event
-                    _this.options.onAfterTransformed(_this.domMatrix);
-
-                    resolve(undefined);
-                  }, duration);
-                } else {
-                  _this.elBoardContent.style.transition = ''; // raise event
-
-                  _this.options.onAfterTransformed(_this.domMatrix);
-
-                  resolve(undefined);
-                }
-              });
-            };
 
             Board.prototype.onMouseWheel = function (e) {
               // ignore horizontal scroll events
@@ -381,6 +362,7 @@
               this.moveDistance(event.clientX - this.options.panOffset.x, event.clientY - this.options.panOffset.y);
               this.options.panOffset.x = event.clientX;
               this.options.panOffset.y = event.clientY;
+              this.options.onPanning(this.domMatrix.e, this.domMatrix.f);
             };
 
             Board.prototype.onPointerUp = function (e) {
@@ -392,10 +374,7 @@
               this.isPointerDown = false;
               this.options.panOffset.x += e.clientX - this.options.panOffset.x;
               this.options.panOffset.y += e.clientY - this.options.panOffset.y;
-              this.options.onAfterPanOffsetChanged({
-                x: this.domMatrix.e,
-                y: this.domMatrix.f
-              });
+              this.options.onAfterPanned(this.domMatrix.e, this.domMatrix.f);
             };
 
             Board.prototype.onKeyDown = function (event) {
@@ -494,22 +473,28 @@
                 return;
               }
 
-              this.options.zoomFactor *= delta; // restrict the zoom factor
+              var newZoom = this.options.zoomFactor * delta;
+              var oldZoom = this.options.zoomFactor; // restrict the zoom factor
 
-              this.options.zoomFactor = Math.min(Math.max(this.options.minZoom, this.options.zoomFactor), this.options.maxZoom); // raise event onBeforeZoomChanged
+              this.options.zoomFactor = Math.min(Math.max(this.options.minZoom, newZoom), this.options.maxZoom); // raise event onBeforeZoomChanged
 
-              this.options.onBeforeZoomChanged(this.options.zoomFactor, {
-                x: this.domMatrix.e,
-                y: this.domMatrix.f
-              });
+              this.options.onBeforeZoomChanged(oldZoom, this.domMatrix.e, this.domMatrix.f);
               var newX = (dx !== null && dx !== void 0 ? dx : this.elBoard.offsetLeft) - this.elBoard.offsetLeft;
               var newY = (dy !== null && dy !== void 0 ? dy : this.elBoard.offsetTop) - this.elBoard.offsetTop;
-              this.domMatrix = new DOMMatrix().translateSelf(newX, newY).scaleSelf(delta).translateSelf(-newX, -newY).multiplySelf(this.domMatrix); // raise event onAfterZoomChanged
+              var newDelta = delta; // check zoom -> maxZoom
 
-              this.options.onAfterZoomChanged(this.options.zoomFactor, {
-                x: this.domMatrix.e,
-                y: this.domMatrix.f
-              });
+              if (newZoom > this.options.maxZoom) {
+                newDelta = this.options.maxZoom / oldZoom;
+                this.options.zoomFactor = this.options.maxZoom;
+              } // check zoom -> minZoom
+              else if (newZoom < this.options.minZoom) {
+                  newDelta = this.options.minZoom / oldZoom;
+                  this.options.zoomFactor = this.options.minZoom;
+                }
+
+              this.domMatrix = new DOMMatrix().translateSelf(newX, newY).scaleSelf(newDelta).translateSelf(-newX, -newY).multiplySelf(this.domMatrix); // raise event onAfterZoomChanged
+
+              this.options.onAfterZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
               this.applyTransform(duration);
             };
 
@@ -571,20 +556,14 @@
                       // restrict the zoom factor
                       this.options.zoomFactor = Math.min(Math.max(this.options.minZoom, factor), this.options.maxZoom); // raise event onBeforeZoomChanged
 
-                      this.options.onBeforeZoomChanged(this.options.zoomFactor, {
-                        x: this.domMatrix.e,
-                        y: this.domMatrix.f
-                      }); // apply scale and translate value
+                      this.options.onBeforeZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f); // apply scale and translate value
 
                       this.domMatrix.a = this.options.zoomFactor;
                       this.domMatrix.d = this.options.zoomFactor;
                       this.domMatrix.e = x || 0;
                       this.domMatrix.f = y || 0; // raise event onAfterZoomChanged
 
-                      this.options.onAfterZoomChanged(this.options.zoomFactor, {
-                        x: this.domMatrix.e,
-                        y: this.domMatrix.f
-                      });
+                      this.options.onAfterZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
                       return [4
                       /*yield*/
                       , this.applyTransform(duration)];
@@ -597,6 +576,35 @@
                       ];
                   }
                 });
+              });
+            };
+
+            Board.prototype.applyTransform = function (duration) {
+              var _this = this;
+
+              if (duration === void 0) {
+                duration = 0;
+              }
+
+              return new Promise(function (resolve) {
+                _this.elBoardContent.style.transform = "" + _this.domMatrix.toString(); // apply animation
+
+                if (duration > 0) {
+                  var transition = "transform " + duration + "ms ease, opacity " + duration + "ms ease";
+                  _this.elBoardContent.style.transition = transition;
+                  setTimeout(function () {
+                    // raise event
+                    _this.options.onAfterTransformed(_this.domMatrix);
+
+                    resolve(undefined);
+                  }, duration);
+                } else {
+                  _this.elBoardContent.style.transition = ''; // raise event
+
+                  _this.options.onAfterTransformed(_this.domMatrix);
+
+                  resolve(undefined);
+                }
               });
             };
 
@@ -676,12 +684,12 @@
           \********************************/
 
         /***/
-        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_23439__) => {
-          __nested_webpack_require_23439__.r(__webpack_exports__);
+        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_24017__) => {
+          __nested_webpack_require_24017__.r(__webpack_exports__);
           /* harmony export */
 
 
-          __nested_webpack_require_23439__.d(__webpack_exports__, {
+          __nested_webpack_require_24017__.d(__webpack_exports__, {
             /* harmony export */
             "pause": () =>
             /* binding */
@@ -725,7 +733,7 @@
 
       /******/
 
-      function __nested_webpack_require_24672__(moduleId) {
+      function __nested_webpack_require_25250__(moduleId) {
         /******/
         // Check if module is in cache
 
@@ -763,7 +771,7 @@
 
         /******/
 
-        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_24672__);
+        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_25250__);
         /******/
 
         /******/
@@ -791,11 +799,11 @@
         // define getter functions for harmony exports
 
         /******/
-        __nested_webpack_require_24672__.d = (exports, definition) => {
+        __nested_webpack_require_25250__.d = (exports, definition) => {
           /******/
           for (var key in definition) {
             /******/
-            if (__nested_webpack_require_24672__.o(definition, key) && !__nested_webpack_require_24672__.o(exports, key)) {
+            if (__nested_webpack_require_25250__.o(definition, key) && !__nested_webpack_require_25250__.o(exports, key)) {
               /******/
               Object.defineProperty(exports, key, {
                 enumerable: true,
@@ -823,7 +831,7 @@
 
       (() => {
         /******/
-        __nested_webpack_require_24672__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+        __nested_webpack_require_25250__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
         /******/
 
       })();
@@ -841,7 +849,7 @@
         // define __esModule on exports
 
         /******/
-        __nested_webpack_require_24672__.r = exports => {
+        __nested_webpack_require_25250__.r = exports => {
           /******/
           if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
             /******/
@@ -872,11 +880,11 @@
         /*!*********************!*\
           !*** ./src/main.ts ***!
           \*********************/
-        __nested_webpack_require_24672__.r(__webpack_exports__);
+        __nested_webpack_require_25250__.r(__webpack_exports__);
         /* harmony export */
 
 
-        __nested_webpack_require_24672__.d(__webpack_exports__, {
+        __nested_webpack_require_25250__.d(__webpack_exports__, {
           /* harmony export */
           "Board": () =>
           /* reexport safe */
@@ -892,7 +900,7 @@
         /* harmony import */
 
 
-        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_24672__(
+        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_25250__(
         /*! ./modules/Board */
         "./src/modules/Board.ts");
       })();
@@ -1025,8 +1033,21 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 var elBoard = document.getElementById('board');
 var elBoardContent = document.getElementById('boardContent');
+var elZoom = document.getElementById('elZoom');
+var elX = document.getElementById('elX');
+var elY = document.getElementById('elY');
+var onAfterZoomChanged = function (factor, x, y) {
+    elZoom.innerText = factor;
+    elX.innerText = x;
+    elY.innerText = y;
+};
+var onPanning = function (x, y) {
+    elX.innerText = x;
+    elY.innerText = y;
+};
 var board = new _d2phap_happla__WEBPACK_IMPORTED_MODULE_0__.Board(elBoard, elBoardContent, {
-//
+    onAfterZoomChanged: onAfterZoomChanged,
+    onPanning: onPanning,
 });
 board.imageRendering = _d2phap_happla__WEBPACK_IMPORTED_MODULE_0__.InterpolationMode.Pixelated;
 board.waitForContentReady()

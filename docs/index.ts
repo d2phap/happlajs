@@ -1,10 +1,28 @@
 // @ts-nocheck
-import { Board, InterpolationMode } from '@d2phap/happla';
+import { Board, InterpolationMode, PanEventFunction, ZoomEventFunction } from '@d2phap/happla';
 
 const elBoard = document.getElementById('board');
 const elBoardContent = document.getElementById('boardContent');
+const elZoom = document.getElementById('elZoom');
+const elX = document.getElementById('elX');
+const elY = document.getElementById('elY');
+
+
+const onAfterZoomChanged: ZoomEventFunction = (factor: number, x: number, y: number) => {
+  elZoom.innerText = factor;
+  elX.innerText = x;
+  elY.innerText = y;
+};
+
+const onPanning: PanEventFunction = (x: number, y: number) => {
+  elX.innerText = x;
+  elY.innerText = y;
+};
+
+
 const board = new Board(elBoard, elBoardContent, {
-  //
+  onAfterZoomChanged,
+  onPanning,
 });
 
 

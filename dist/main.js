@@ -114,14 +114,15 @@ var Board = /** @class */ (function () {
             imageRendering: InterpolationMode.Pixelated,
             allowZoom: true,
             minZoom: 0.05,
-            maxZoom: 10000,
+            maxZoom: 150,
             zoomFactor: 1,
             panOffset: { x: 0, y: 0 },
             allowPan: true,
             onBeforeZoomChanged: function () { return ({}); },
             onAfterZoomChanged: function () { return ({}); },
             onAfterTransformed: function () { return ({}); },
-            onAfterPanOffsetChanged: function () { return ({}); },
+            onPanning: function () { return ({}); },
+            onAfterPanned: function () { return ({}); },
         };
         this.elBoard = board;
         this.elBoardContent = boardContent;
@@ -164,31 +165,15 @@ var Board = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Board.prototype, "zoomFactor", {
+        get: function () {
+            return this.options.zoomFactor;
+        },
+        enumerable: false,
+        configurable: true
+    });
     // #endregion
     // #region Private functions
-    Board.prototype.applyTransform = function (duration) {
-        var _this = this;
-        if (duration === void 0) { duration = 0; }
-        return new Promise(function (resolve) {
-            _this.elBoardContent.style.transform = "" + _this.domMatrix.toString();
-            // apply animation
-            if (duration > 0) {
-                var transition = "transform " + duration + "ms ease, opacity " + duration + "ms ease";
-                _this.elBoardContent.style.transition = transition;
-                setTimeout(function () {
-                    // raise event
-                    _this.options.onAfterTransformed(_this.domMatrix);
-                    resolve(undefined);
-                }, duration);
-            }
-            else {
-                _this.elBoardContent.style.transition = '';
-                // raise event
-                _this.options.onAfterTransformed(_this.domMatrix);
-                resolve(undefined);
-            }
-        });
-    };
     Board.prototype.onMouseWheel = function (e) {
         // ignore horizontal scroll events
         if (e.deltaY === 0) {
@@ -218,6 +203,7 @@ var Board = /** @class */ (function () {
         this.moveDistance(event.clientX - this.options.panOffset.x, event.clientY - this.options.panOffset.y);
         this.options.panOffset.x = event.clientX;
         this.options.panOffset.y = event.clientY;
+        this.options.onPanning(this.domMatrix.e, this.domMatrix.f);
     };
     Board.prototype.onPointerUp = function (e) {
         if (!this.isPointerDown) {
@@ -227,10 +213,7 @@ var Board = /** @class */ (function () {
         this.isPointerDown = false;
         this.options.panOffset.x += e.clientX - this.options.panOffset.x;
         this.options.panOffset.y += e.clientY - this.options.panOffset.y;
-        this.options.onAfterPanOffsetChanged({
-            x: this.domMatrix.e,
-            y: this.domMatrix.f,
-        });
+        this.options.onAfterPanned(this.domMatrix.e, this.domMatrix.f);
     };
     Board.prototype.onKeyDown = function (event) {
         switch (event.key) {
@@ -304,26 +287,32 @@ var Board = /** @class */ (function () {
         if (!this.options.allowZoom) {
             return;
         }
-        this.options.zoomFactor *= delta;
+        var newZoom = this.options.zoomFactor * delta;
+        var oldZoom = this.options.zoomFactor;
         // restrict the zoom factor
-        this.options.zoomFactor = Math.min(Math.max(this.options.minZoom, this.options.zoomFactor), this.options.maxZoom);
+        this.options.zoomFactor = Math.min(Math.max(this.options.minZoom, newZoom), this.options.maxZoom);
         // raise event onBeforeZoomChanged
-        this.options.onBeforeZoomChanged(this.options.zoomFactor, {
-            x: this.domMatrix.e,
-            y: this.domMatrix.f,
-        });
+        this.options.onBeforeZoomChanged(oldZoom, this.domMatrix.e, this.domMatrix.f);
         var newX = (dx !== null && dx !== void 0 ? dx : this.elBoard.offsetLeft) - this.elBoard.offsetLeft;
         var newY = (dy !== null && dy !== void 0 ? dy : this.elBoard.offsetTop) - this.elBoard.offsetTop;
+        var newDelta = delta;
+        // check zoom -> maxZoom
+        if (newZoom > this.options.maxZoom) {
+            newDelta = this.options.maxZoom / oldZoom;
+            this.options.zoomFactor = this.options.maxZoom;
+        }
+        // check zoom -> minZoom
+        else if (newZoom < this.options.minZoom) {
+            newDelta = this.options.minZoom / oldZoom;
+            this.options.zoomFactor = this.options.minZoom;
+        }
         this.domMatrix = new DOMMatrix()
             .translateSelf(newX, newY)
-            .scaleSelf(delta)
+            .scaleSelf(newDelta)
             .translateSelf(-newX, -newY)
             .multiplySelf(this.domMatrix);
         // raise event onAfterZoomChanged
-        this.options.onAfterZoomChanged(this.options.zoomFactor, {
-            x: this.domMatrix.e,
-            y: this.domMatrix.f,
-        });
+        this.options.onAfterZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
         this.applyTransform(duration);
     };
     Board.prototype.startMoving = function () {
@@ -374,26 +363,43 @@ var Board = /** @class */ (function () {
                         // restrict the zoom factor
                         this.options.zoomFactor = Math.min(Math.max(this.options.minZoom, factor), this.options.maxZoom);
                         // raise event onBeforeZoomChanged
-                        this.options.onBeforeZoomChanged(this.options.zoomFactor, {
-                            x: this.domMatrix.e,
-                            y: this.domMatrix.f,
-                        });
+                        this.options.onBeforeZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
                         // apply scale and translate value
                         this.domMatrix.a = this.options.zoomFactor;
                         this.domMatrix.d = this.options.zoomFactor;
                         this.domMatrix.e = x || 0;
                         this.domMatrix.f = y || 0;
                         // raise event onAfterZoomChanged
-                        this.options.onAfterZoomChanged(this.options.zoomFactor, {
-                            x: this.domMatrix.e,
-                            y: this.domMatrix.f,
-                        });
+                        this.options.onAfterZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
                         return [4 /*yield*/, this.applyTransform(duration)];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
                 }
             });
+        });
+    };
+    Board.prototype.applyTransform = function (duration) {
+        var _this = this;
+        if (duration === void 0) { duration = 0; }
+        return new Promise(function (resolve) {
+            _this.elBoardContent.style.transform = "" + _this.domMatrix.toString();
+            // apply animation
+            if (duration > 0) {
+                var transition = "transform " + duration + "ms ease, opacity " + duration + "ms ease";
+                _this.elBoardContent.style.transition = transition;
+                setTimeout(function () {
+                    // raise event
+                    _this.options.onAfterTransformed(_this.domMatrix);
+                    resolve(undefined);
+                }, duration);
+            }
+            else {
+                _this.elBoardContent.style.transition = '';
+                // raise event
+                _this.options.onAfterTransformed(_this.domMatrix);
+                resolve(undefined);
+            }
         });
     };
     Board.prototype.enable = function () {
