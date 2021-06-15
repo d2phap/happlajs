@@ -3,6 +3,8 @@ import { Board, InterpolationMode, PanEventFunction, ZoomEventFunction } from '@
 
 const elBoard = document.getElementById('board');
 const elBoardContent = document.getElementById('boardContent');
+
+const elScaleRatio = document.getElementById('elScaleRatio');
 const elZoom = document.getElementById('elZoom');
 const elX = document.getElementById('elX');
 const elY = document.getElementById('elY');
@@ -11,6 +13,7 @@ const elHeight = document.getElementById('elHeight');
 
 
 const onAfterZoomChanged: ZoomEventFunction = (factor: number, x: number, y: number) => {
+  elScaleRatio.innerText = board.scaleRatio;
   elZoom.innerText = factor;
   elX.innerText = x;
   elY.innerText = y;

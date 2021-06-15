@@ -1047,12 +1047,14 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 var elBoard = document.getElementById('board');
 var elBoardContent = document.getElementById('boardContent');
+var elScaleRatio = document.getElementById('elScaleRatio');
 var elZoom = document.getElementById('elZoom');
 var elX = document.getElementById('elX');
 var elY = document.getElementById('elY');
 var elWidth = document.getElementById('elWidth');
 var elHeight = document.getElementById('elHeight');
 var onAfterZoomChanged = function (factor, x, y) {
+    elScaleRatio.innerText = board.scaleRatio;
     elZoom.innerText = factor;
     elX.innerText = x;
     elY.innerText = y;
