@@ -17,6 +17,7 @@ export interface BoardOptions {
         y: number;
     };
     imageRendering?: InterpolationMode;
+    scaleRatio?: number;
     onBeforeContentReady?: () => void;
     onContentReady?: () => void;
     onBeforeZoomChanged?: ZoomEventFunction;
@@ -31,7 +32,7 @@ export declare class Board {
     private domMatrix;
     private isPointerDown;
     private animationFrame;
-    private moving;
+    private isMoving;
     private arrowLeftDown;
     private arrowRightDown;
     private arrowUpDown;
@@ -41,6 +42,12 @@ export declare class Board {
     constructor(board: HTMLElement, boardContent: HTMLElement, options?: BoardOptions);
     get imageRendering(): InterpolationMode;
     set imageRendering(value: InterpolationMode);
+    /**
+     * Gets zoom factor after computing device ratio (DPI)
+     *
+     * @readonly
+     * @memberof Board
+     */
     get zoomFactor(): number;
     private onMouseWheel;
     private onPointerDown;
@@ -48,6 +55,7 @@ export declare class Board {
     private onPointerUp;
     private onKeyDown;
     private onKeyUp;
+    private dpi;
     private moveDistance;
     private zoomDistance;
     private startMoving;

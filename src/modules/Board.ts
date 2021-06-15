@@ -20,6 +20,7 @@ export interface BoardOptions {
   panOffset?: { x: number, y: number };
 
   imageRendering?: InterpolationMode;
+  scaleRatio?: number;
 
   onBeforeContentReady?: () => void;
   onContentReady?: () => void;
@@ -39,7 +40,7 @@ export class Board {
   private isPointerDown = false;
 
   private animationFrame: number;
-  private moving = false;
+  private isMoving = false;
   private arrowLeftDown = false;
   private arrowRightDown = false;
   private arrowUpDown = false;
@@ -50,12 +51,13 @@ export class Board {
     imageRendering: InterpolationMode.Pixelated,
 
     allowZoom: true,
-    minZoom: 0.05,
+    minZoom: 0.1,
     maxZoom: 150,
     zoomFactor: 1,
     panOffset: { x: 0, y: 0 },
 
     allowPan: true,
+    scaleRatio: window.devicePixelRatio,
 
     onBeforeContentReady: () => {},
     onContentReady: () => {},
@@ -77,16 +79,15 @@ export class Board {
       ...options || {},
     };
 
-    this.domMatrix = new DOMMatrix();
-    this.domMatrix.a = this.options.zoomFactor;
-    this.domMatrix.d = this.options.zoomFactor;
-    this.domMatrix.e = this.options.panOffset.x;
-    this.domMatrix.f = this.options.panOffset.y;
+    this.domMatrix = new DOMMatrix()
+      .scaleSelf(this.options.zoomFactor)
+      .translateSelf(this.options.panOffset.x, this.options.panOffset.y);
 
     this.zoomDistance = this.zoomDistance.bind(this);
     this.moveDistance = this.moveDistance.bind(this);
     this.startMoving = this.startMoving.bind(this);
     this.stopMoving = this.stopMoving.bind(this);
+    this.dpi = this.dpi.bind(this);
 
     this.enable = this.enable.bind(this);
     this.disable = this.disable.bind(this);
@@ -122,8 +123,14 @@ export class Board {
     this.elBoardContent.style.imageRendering = value;
   }
 
+  /**
+   * Gets zoom factor after computing device ratio (DPI)
+   *
+   * @readonly
+   * @memberof Board
+   */
   get zoomFactor() {
-    return this.options.zoomFactor;
+    return this.options.zoomFactor * this.options.scaleRatio;
   }
   // #endregion
 
@@ -191,29 +198,29 @@ export class Board {
     switch (event.key) {
       case 'ArrowLeft':
         this.arrowLeftDown = true;
-        if (!this.moving) {
-          this.moving = true;
+        if (!this.isMoving) {
+          this.isMoving = true;
           this.startMoving();
         }
         break;
       case 'ArrowUp':
         this.arrowUpDown = true;
-        if (!this.moving) {
-          this.moving = true;
+        if (!this.isMoving) {
+          this.isMoving = true;
           this.startMoving();
         }
         break;
       case 'ArrowRight':
         this.arrowRightDown = true;
-        if (!this.moving) {
-          this.moving = true;
+        if (!this.isMoving) {
+          this.isMoving = true;
           this.startMoving();
         }
         break;
       case 'ArrowDown':
         this.arrowDownDown = true;
-        if (!this.moving) {
-          this.moving = true;
+        if (!this.isMoving) {
+          this.isMoving = true;
           this.startMoving();
         }
         break;
@@ -250,6 +257,10 @@ export class Board {
     }
   }
 
+  private dpi(value: number) {
+    return value / this.options.scaleRatio;
+  }
+
   private moveDistance(x = 0, y = 0) {
     // Update the transform coordinates with the distance from origin and current position
     this.domMatrix.e += x;
@@ -263,8 +274,14 @@ export class Board {
       return;
     }
 
-    const newZoom = this.options.zoomFactor * delta;
+    // update the current zoom factor
+    this.options.zoomFactor = this.domMatrix.a;
+
     const oldZoom = this.options.zoomFactor;
+    const newZoom = oldZoom * delta;
+
+    // raise event onBeforeZoomChanged
+    this.options.onBeforeZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
 
     // restrict the zoom factor
     this.options.zoomFactor = Math.min(
@@ -272,23 +289,20 @@ export class Board {
       this.options.maxZoom,
     );
 
-    // raise event onBeforeZoomChanged
-    this.options.onBeforeZoomChanged(oldZoom, this.domMatrix.e, this.domMatrix.f);
-
     const newX = (dx ?? this.elBoard.offsetLeft) - this.elBoard.offsetLeft;
     const newY = (dy ?? this.elBoard.offsetTop) - this.elBoard.offsetTop;
     let newDelta = delta;
 
     // check zoom -> maxZoom
-    if (newZoom > this.options.maxZoom) {
-      newDelta = this.options.maxZoom / oldZoom;
-      this.options.zoomFactor = this.options.maxZoom;
+    if (newZoom * this.options.scaleRatio > this.options.maxZoom) {
+      newDelta = this.dpi(this.options.maxZoom) / oldZoom;
+      this.options.zoomFactor = this.dpi(this.options.maxZoom);
     }
 
     // check zoom -> minZoom
-    else if (newZoom < this.options.minZoom) {
-      newDelta = this.options.minZoom / oldZoom;
-      this.options.zoomFactor = this.options.minZoom;
+    else if (newZoom * this.options.scaleRatio < this.options.minZoom) {
+      newDelta = this.dpi(this.options.minZoom) / oldZoom;
+      this.options.zoomFactor = this.dpi(this.options.minZoom);
     }
 
     this.domMatrix = new DOMMatrix()
@@ -298,7 +312,7 @@ export class Board {
       .multiplySelf(this.domMatrix);
 
     // raise event onAfterZoomChanged
-    this.options.onAfterZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
+    this.options.onAfterZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
 
     this.applyTransform(duration);
   }
@@ -326,7 +340,7 @@ export class Board {
 
   private stopMoving() {
     cancelAnimationFrame(this.animationFrame);
-    this.moving = false;
+    this.isMoving = false;
   }
   // #endregion
 
@@ -342,12 +356,12 @@ export class Board {
   public async zoomTo(factor: number, x?: number, y?: number, duration?: number) {
     // restrict the zoom factor
     this.options.zoomFactor = Math.min(
-      Math.max(this.options.minZoom, factor),
+      Math.max(this.options.minZoom, this.dpi(factor)),
       this.options.maxZoom,
     );
 
     // raise event onBeforeZoomChanged
-    this.options.onBeforeZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
+    this.options.onBeforeZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
 
     // apply scale and translate value
     this.domMatrix.a = this.options.zoomFactor;
@@ -356,7 +370,7 @@ export class Board {
     this.domMatrix.f = y || 0;
 
     // raise event onAfterZoomChanged
-    this.options.onAfterZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
+    this.options.onAfterZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
 
     await this.applyTransform(duration);
   }

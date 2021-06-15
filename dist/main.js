@@ -105,7 +105,7 @@ var InterpolationMode;
 var Board = /** @class */ (function () {
     function Board(board, boardContent, options) {
         this.isPointerDown = false;
-        this.moving = false;
+        this.isMoving = false;
         this.arrowLeftDown = false;
         this.arrowRightDown = false;
         this.arrowUpDown = false;
@@ -113,11 +113,12 @@ var Board = /** @class */ (function () {
         this.defaultOptions = {
             imageRendering: InterpolationMode.Pixelated,
             allowZoom: true,
-            minZoom: 0.05,
+            minZoom: 0.1,
             maxZoom: 150,
             zoomFactor: 1,
             panOffset: { x: 0, y: 0 },
             allowPan: true,
+            scaleRatio: window.devicePixelRatio,
             onBeforeContentReady: function () { },
             onContentReady: function () { },
             onBeforeZoomChanged: function () { },
@@ -129,15 +130,14 @@ var Board = /** @class */ (function () {
         this.elBoard = board;
         this.elBoardContent = boardContent;
         this.options = __assign(__assign({}, this.defaultOptions), options || {});
-        this.domMatrix = new DOMMatrix();
-        this.domMatrix.a = this.options.zoomFactor;
-        this.domMatrix.d = this.options.zoomFactor;
-        this.domMatrix.e = this.options.panOffset.x;
-        this.domMatrix.f = this.options.panOffset.y;
+        this.domMatrix = new DOMMatrix()
+            .scaleSelf(this.options.zoomFactor)
+            .translateSelf(this.options.panOffset.x, this.options.panOffset.y);
         this.zoomDistance = this.zoomDistance.bind(this);
         this.moveDistance = this.moveDistance.bind(this);
         this.startMoving = this.startMoving.bind(this);
         this.stopMoving = this.stopMoving.bind(this);
+        this.dpi = this.dpi.bind(this);
         this.enable = this.enable.bind(this);
         this.disable = this.disable.bind(this);
         this.zoomTo = this.zoomTo.bind(this);
@@ -170,8 +170,14 @@ var Board = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(Board.prototype, "zoomFactor", {
+        /**
+         * Gets zoom factor after computing device ratio (DPI)
+         *
+         * @readonly
+         * @memberof Board
+         */
         get: function () {
-            return this.options.zoomFactor;
+            return this.options.zoomFactor * this.options.scaleRatio;
         },
         enumerable: false,
         configurable: true
@@ -223,29 +229,29 @@ var Board = /** @class */ (function () {
         switch (event.key) {
             case 'ArrowLeft':
                 this.arrowLeftDown = true;
-                if (!this.moving) {
-                    this.moving = true;
+                if (!this.isMoving) {
+                    this.isMoving = true;
                     this.startMoving();
                 }
                 break;
             case 'ArrowUp':
                 this.arrowUpDown = true;
-                if (!this.moving) {
-                    this.moving = true;
+                if (!this.isMoving) {
+                    this.isMoving = true;
                     this.startMoving();
                 }
                 break;
             case 'ArrowRight':
                 this.arrowRightDown = true;
-                if (!this.moving) {
-                    this.moving = true;
+                if (!this.isMoving) {
+                    this.isMoving = true;
                     this.startMoving();
                 }
                 break;
             case 'ArrowDown':
                 this.arrowDownDown = true;
-                if (!this.moving) {
-                    this.moving = true;
+                if (!this.isMoving) {
+                    this.isMoving = true;
                     this.startMoving();
                 }
                 break;
@@ -279,6 +285,9 @@ var Board = /** @class */ (function () {
             this.stopMoving();
         }
     };
+    Board.prototype.dpi = function (value) {
+        return value / this.options.scaleRatio;
+    };
     Board.prototype.moveDistance = function (x, y) {
         if (x === void 0) { x = 0; }
         if (y === void 0) { y = 0; }
@@ -291,24 +300,26 @@ var Board = /** @class */ (function () {
         if (!this.options.allowZoom) {
             return;
         }
-        var newZoom = this.options.zoomFactor * delta;
+        // update the current zoom factor
+        this.options.zoomFactor = this.domMatrix.a;
         var oldZoom = this.options.zoomFactor;
+        var newZoom = oldZoom * delta;
+        // raise event onBeforeZoomChanged
+        this.options.onBeforeZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
         // restrict the zoom factor
         this.options.zoomFactor = Math.min(Math.max(this.options.minZoom, newZoom), this.options.maxZoom);
-        // raise event onBeforeZoomChanged
-        this.options.onBeforeZoomChanged(oldZoom, this.domMatrix.e, this.domMatrix.f);
         var newX = (dx !== null && dx !== void 0 ? dx : this.elBoard.offsetLeft) - this.elBoard.offsetLeft;
         var newY = (dy !== null && dy !== void 0 ? dy : this.elBoard.offsetTop) - this.elBoard.offsetTop;
         var newDelta = delta;
         // check zoom -> maxZoom
-        if (newZoom > this.options.maxZoom) {
-            newDelta = this.options.maxZoom / oldZoom;
-            this.options.zoomFactor = this.options.maxZoom;
+        if (newZoom * this.options.scaleRatio > this.options.maxZoom) {
+            newDelta = this.dpi(this.options.maxZoom) / oldZoom;
+            this.options.zoomFactor = this.dpi(this.options.maxZoom);
         }
         // check zoom -> minZoom
-        else if (newZoom < this.options.minZoom) {
-            newDelta = this.options.minZoom / oldZoom;
-            this.options.zoomFactor = this.options.minZoom;
+        else if (newZoom * this.options.scaleRatio < this.options.minZoom) {
+            newDelta = this.dpi(this.options.minZoom) / oldZoom;
+            this.options.zoomFactor = this.dpi(this.options.minZoom);
         }
         this.domMatrix = new DOMMatrix()
             .translateSelf(newX, newY)
@@ -316,7 +327,7 @@ var Board = /** @class */ (function () {
             .translateSelf(-newX, -newY)
             .multiplySelf(this.domMatrix);
         // raise event onAfterZoomChanged
-        this.options.onAfterZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
+        this.options.onAfterZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
         this.applyTransform(duration);
     };
     Board.prototype.startMoving = function () {
@@ -340,7 +351,7 @@ var Board = /** @class */ (function () {
     };
     Board.prototype.stopMoving = function () {
         cancelAnimationFrame(this.animationFrame);
-        this.moving = false;
+        this.isMoving = false;
     };
     // #endregion
     // #region Public functions
@@ -365,16 +376,16 @@ var Board = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         // restrict the zoom factor
-                        this.options.zoomFactor = Math.min(Math.max(this.options.minZoom, factor), this.options.maxZoom);
+                        this.options.zoomFactor = Math.min(Math.max(this.options.minZoom, this.dpi(factor)), this.options.maxZoom);
                         // raise event onBeforeZoomChanged
-                        this.options.onBeforeZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
+                        this.options.onBeforeZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
                         // apply scale and translate value
                         this.domMatrix.a = this.options.zoomFactor;
                         this.domMatrix.d = this.options.zoomFactor;
                         this.domMatrix.e = x || 0;
                         this.domMatrix.f = y || 0;
                         // raise event onAfterZoomChanged
-                        this.options.onAfterZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
+                        this.options.onAfterZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
                         return [4 /*yield*/, this.applyTransform(duration)];
                     case 1:
                         _a.sent();

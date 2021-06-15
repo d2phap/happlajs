@@ -16,7 +16,7 @@
     }
     .info {
       position: fixed;
-      top: 0;
+      bottom: 0;
       left: 0;
       pointer-events: none;
       z-index: 100;
@@ -46,12 +46,13 @@
     #boardContent {
       background-color: bisque;
       display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      /* align-items: center;
+      justify-content: center; */
     }
 
     #boardContent * {
       -webkit-user-drag: none;
+      user-select: none;
     }
   </style>
 </head>
@@ -65,13 +66,14 @@
   </div>
   <div id="board" tabindex="0">
     <div id="boardContent">
+      <!-- <img src="https://www.kirupa.com/images/kirupa_sig.png"> -->
       <img id="img" src="https://c.wallhere.com/photos/49/41/anime_anime_boys_anime_men_Black_Clover_Asta_Yuno_Noelle_Silva_Yami_Sukehiro-1966873.jpg!d" />
-      <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" />
-      <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" />
-      <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" />
-      <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" />
-      <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" />
-      <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" />
+      <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
+      <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
+      <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
+      <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
+      <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
+      <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
     </div>
   </div>
 

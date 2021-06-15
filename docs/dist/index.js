@@ -244,7 +244,7 @@
           function () {
             function Board(board, boardContent, options) {
               this.isPointerDown = false;
-              this.moving = false;
+              this.isMoving = false;
               this.arrowLeftDown = false;
               this.arrowRightDown = false;
               this.arrowUpDown = false;
@@ -252,7 +252,7 @@
               this.defaultOptions = {
                 imageRendering: InterpolationMode.Pixelated,
                 allowZoom: true,
-                minZoom: 0.05,
+                minZoom: 0.1,
                 maxZoom: 150,
                 zoomFactor: 1,
                 panOffset: {
@@ -260,6 +260,7 @@
                   y: 0
                 },
                 allowPan: true,
+                scaleRatio: window.devicePixelRatio,
                 onBeforeContentReady: function () {},
                 onContentReady: function () {},
                 onBeforeZoomChanged: function () {},
@@ -271,15 +272,12 @@
               this.elBoard = board;
               this.elBoardContent = boardContent;
               this.options = __assign(__assign({}, this.defaultOptions), options || {});
-              this.domMatrix = new DOMMatrix();
-              this.domMatrix.a = this.options.zoomFactor;
-              this.domMatrix.d = this.options.zoomFactor;
-              this.domMatrix.e = this.options.panOffset.x;
-              this.domMatrix.f = this.options.panOffset.y;
+              this.domMatrix = new DOMMatrix().scaleSelf(this.options.zoomFactor).translateSelf(this.options.panOffset.x, this.options.panOffset.y);
               this.zoomDistance = this.zoomDistance.bind(this);
               this.moveDistance = this.moveDistance.bind(this);
               this.startMoving = this.startMoving.bind(this);
               this.stopMoving = this.stopMoving.bind(this);
+              this.dpi = this.dpi.bind(this);
               this.enable = this.enable.bind(this);
               this.disable = this.disable.bind(this);
               this.zoomTo = this.zoomTo.bind(this);
@@ -313,8 +311,14 @@
               configurable: true
             });
             Object.defineProperty(Board.prototype, "zoomFactor", {
+              /**
+               * Gets zoom factor after computing device ratio (DPI)
+               *
+               * @readonly
+               * @memberof Board
+               */
               get: function () {
-                return this.options.zoomFactor;
+                return this.options.zoomFactor * this.options.scaleRatio;
               },
               enumerable: false,
               configurable: true
@@ -376,8 +380,8 @@
                 case 'ArrowLeft':
                   this.arrowLeftDown = true;
 
-                  if (!this.moving) {
-                    this.moving = true;
+                  if (!this.isMoving) {
+                    this.isMoving = true;
                     this.startMoving();
                   }
 
@@ -386,8 +390,8 @@
                 case 'ArrowUp':
                   this.arrowUpDown = true;
 
-                  if (!this.moving) {
-                    this.moving = true;
+                  if (!this.isMoving) {
+                    this.isMoving = true;
                     this.startMoving();
                   }
 
@@ -396,8 +400,8 @@
                 case 'ArrowRight':
                   this.arrowRightDown = true;
 
-                  if (!this.moving) {
-                    this.moving = true;
+                  if (!this.isMoving) {
+                    this.isMoving = true;
                     this.startMoving();
                   }
 
@@ -406,8 +410,8 @@
                 case 'ArrowDown':
                   this.arrowDownDown = true;
 
-                  if (!this.moving) {
-                    this.moving = true;
+                  if (!this.isMoving) {
+                    this.isMoving = true;
                     this.startMoving();
                   }
 
@@ -447,6 +451,10 @@
               }
             };
 
+            Board.prototype.dpi = function (value) {
+              return value / this.options.scaleRatio;
+            };
+
             Board.prototype.moveDistance = function (x, y) {
               if (x === void 0) {
                 x = 0;
@@ -465,30 +473,32 @@
             Board.prototype.zoomDistance = function (delta, dx, dy, duration) {
               if (!this.options.allowZoom) {
                 return;
-              }
+              } // update the current zoom factor
 
-              var newZoom = this.options.zoomFactor * delta;
-              var oldZoom = this.options.zoomFactor; // restrict the zoom factor
 
-              this.options.zoomFactor = Math.min(Math.max(this.options.minZoom, newZoom), this.options.maxZoom); // raise event onBeforeZoomChanged
+              this.options.zoomFactor = this.domMatrix.a;
+              var oldZoom = this.options.zoomFactor;
+              var newZoom = oldZoom * delta; // raise event onBeforeZoomChanged
 
-              this.options.onBeforeZoomChanged(oldZoom, this.domMatrix.e, this.domMatrix.f);
+              this.options.onBeforeZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f); // restrict the zoom factor
+
+              this.options.zoomFactor = Math.min(Math.max(this.options.minZoom, newZoom), this.options.maxZoom);
               var newX = (dx !== null && dx !== void 0 ? dx : this.elBoard.offsetLeft) - this.elBoard.offsetLeft;
               var newY = (dy !== null && dy !== void 0 ? dy : this.elBoard.offsetTop) - this.elBoard.offsetTop;
               var newDelta = delta; // check zoom -> maxZoom
 
-              if (newZoom > this.options.maxZoom) {
-                newDelta = this.options.maxZoom / oldZoom;
-                this.options.zoomFactor = this.options.maxZoom;
+              if (newZoom * this.options.scaleRatio > this.options.maxZoom) {
+                newDelta = this.dpi(this.options.maxZoom) / oldZoom;
+                this.options.zoomFactor = this.dpi(this.options.maxZoom);
               } // check zoom -> minZoom
-              else if (newZoom < this.options.minZoom) {
-                  newDelta = this.options.minZoom / oldZoom;
-                  this.options.zoomFactor = this.options.minZoom;
+              else if (newZoom * this.options.scaleRatio < this.options.minZoom) {
+                  newDelta = this.dpi(this.options.minZoom) / oldZoom;
+                  this.options.zoomFactor = this.dpi(this.options.minZoom);
                 }
 
               this.domMatrix = new DOMMatrix().translateSelf(newX, newY).scaleSelf(newDelta).translateSelf(-newX, -newY).multiplySelf(this.domMatrix); // raise event onAfterZoomChanged
 
-              this.options.onAfterZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
+              this.options.onAfterZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
               this.applyTransform(duration);
             };
 
@@ -515,7 +525,7 @@
 
             Board.prototype.stopMoving = function () {
               cancelAnimationFrame(this.animationFrame);
-              this.moving = false;
+              this.isMoving = false;
             }; // #endregion
             // #region Public functions
 
@@ -548,16 +558,16 @@
                   switch (_a.label) {
                     case 0:
                       // restrict the zoom factor
-                      this.options.zoomFactor = Math.min(Math.max(this.options.minZoom, factor), this.options.maxZoom); // raise event onBeforeZoomChanged
+                      this.options.zoomFactor = Math.min(Math.max(this.options.minZoom, this.dpi(factor)), this.options.maxZoom); // raise event onBeforeZoomChanged
 
-                      this.options.onBeforeZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f); // apply scale and translate value
+                      this.options.onBeforeZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f); // apply scale and translate value
 
                       this.domMatrix.a = this.options.zoomFactor;
                       this.domMatrix.d = this.options.zoomFactor;
                       this.domMatrix.e = x || 0;
                       this.domMatrix.f = y || 0; // raise event onAfterZoomChanged
 
-                      this.options.onAfterZoomChanged(this.options.zoomFactor, this.domMatrix.e, this.domMatrix.f);
+                      this.options.onAfterZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
                       return [4
                       /*yield*/
                       , this.applyTransform(duration)];
@@ -678,12 +688,12 @@
           \********************************/
 
         /***/
-        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_23954__) => {
-          __nested_webpack_require_23954__.r(__webpack_exports__);
+        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_24433__) => {
+          __nested_webpack_require_24433__.r(__webpack_exports__);
           /* harmony export */
 
 
-          __nested_webpack_require_23954__.d(__webpack_exports__, {
+          __nested_webpack_require_24433__.d(__webpack_exports__, {
             /* harmony export */
             "pause": () =>
             /* binding */
@@ -727,7 +737,7 @@
 
       /******/
 
-      function __nested_webpack_require_25187__(moduleId) {
+      function __nested_webpack_require_25666__(moduleId) {
         /******/
         // Check if module is in cache
 
@@ -765,7 +775,7 @@
 
         /******/
 
-        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_25187__);
+        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_25666__);
         /******/
 
         /******/
@@ -793,11 +803,11 @@
         // define getter functions for harmony exports
 
         /******/
-        __nested_webpack_require_25187__.d = (exports, definition) => {
+        __nested_webpack_require_25666__.d = (exports, definition) => {
           /******/
           for (var key in definition) {
             /******/
-            if (__nested_webpack_require_25187__.o(definition, key) && !__nested_webpack_require_25187__.o(exports, key)) {
+            if (__nested_webpack_require_25666__.o(definition, key) && !__nested_webpack_require_25666__.o(exports, key)) {
               /******/
               Object.defineProperty(exports, key, {
                 enumerable: true,
@@ -825,7 +835,7 @@
 
       (() => {
         /******/
-        __nested_webpack_require_25187__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+        __nested_webpack_require_25666__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
         /******/
 
       })();
@@ -843,7 +853,7 @@
         // define __esModule on exports
 
         /******/
-        __nested_webpack_require_25187__.r = exports => {
+        __nested_webpack_require_25666__.r = exports => {
           /******/
           if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
             /******/
@@ -874,11 +884,11 @@
         /*!*********************!*\
           !*** ./src/main.ts ***!
           \*********************/
-        __nested_webpack_require_25187__.r(__webpack_exports__);
+        __nested_webpack_require_25666__.r(__webpack_exports__);
         /* harmony export */
 
 
-        __nested_webpack_require_25187__.d(__webpack_exports__, {
+        __nested_webpack_require_25666__.d(__webpack_exports__, {
           /* harmony export */
           "Board": () =>
           /* reexport safe */
@@ -894,7 +904,7 @@
         /* harmony import */
 
 
-        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_25187__(
+        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_25666__(
         /*! ./modules/Board */
         "./src/modules/Board.ts");
       })();
@@ -1065,8 +1075,8 @@ board.waitForContentReady()
         switch (_a.label) {
             case 0:
                 board.enable();
-                w = elBoardContent.scrollWidth;
-                h = elBoardContent.scrollHeight;
+                w = elBoardContent.scrollWidth / window.devicePixelRatio;
+                h = elBoardContent.scrollHeight / window.devicePixelRatio;
                 widthScale = elBoard.clientWidth / w;
                 heightScale = elBoard.clientHeight / h;
                 scale = Math.min(widthScale, heightScale);
