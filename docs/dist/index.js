@@ -310,6 +310,16 @@
               enumerable: false,
               configurable: true
             });
+            Object.defineProperty(Board.prototype, "scaleRatio", {
+              get: function () {
+                return this.options.scaleRatio;
+              },
+              set: function (value) {
+                this.options.scaleRatio = value;
+              },
+              enumerable: false,
+              configurable: true
+            });
             Object.defineProperty(Board.prototype, "zoomFactor", {
               /**
                * Gets zoom factor after computing device ratio (DPI)
@@ -688,12 +698,12 @@
           \********************************/
 
         /***/
-        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_24433__) => {
-          __nested_webpack_require_24433__.r(__webpack_exports__);
+        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_24784__) => {
+          __nested_webpack_require_24784__.r(__webpack_exports__);
           /* harmony export */
 
 
-          __nested_webpack_require_24433__.d(__webpack_exports__, {
+          __nested_webpack_require_24784__.d(__webpack_exports__, {
             /* harmony export */
             "pause": () =>
             /* binding */
@@ -737,7 +747,7 @@
 
       /******/
 
-      function __nested_webpack_require_25666__(moduleId) {
+      function __nested_webpack_require_26017__(moduleId) {
         /******/
         // Check if module is in cache
 
@@ -775,7 +785,7 @@
 
         /******/
 
-        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_25666__);
+        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_26017__);
         /******/
 
         /******/
@@ -803,11 +813,11 @@
         // define getter functions for harmony exports
 
         /******/
-        __nested_webpack_require_25666__.d = (exports, definition) => {
+        __nested_webpack_require_26017__.d = (exports, definition) => {
           /******/
           for (var key in definition) {
             /******/
-            if (__nested_webpack_require_25666__.o(definition, key) && !__nested_webpack_require_25666__.o(exports, key)) {
+            if (__nested_webpack_require_26017__.o(definition, key) && !__nested_webpack_require_26017__.o(exports, key)) {
               /******/
               Object.defineProperty(exports, key, {
                 enumerable: true,
@@ -835,7 +845,7 @@
 
       (() => {
         /******/
-        __nested_webpack_require_25666__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+        __nested_webpack_require_26017__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
         /******/
 
       })();
@@ -853,7 +863,7 @@
         // define __esModule on exports
 
         /******/
-        __nested_webpack_require_25666__.r = exports => {
+        __nested_webpack_require_26017__.r = exports => {
           /******/
           if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
             /******/
@@ -884,11 +894,11 @@
         /*!*********************!*\
           !*** ./src/main.ts ***!
           \*********************/
-        __nested_webpack_require_25666__.r(__webpack_exports__);
+        __nested_webpack_require_26017__.r(__webpack_exports__);
         /* harmony export */
 
 
-        __nested_webpack_require_25666__.d(__webpack_exports__, {
+        __nested_webpack_require_26017__.d(__webpack_exports__, {
           /* harmony export */
           "Board": () =>
           /* reexport safe */
@@ -904,7 +914,7 @@
         /* harmony import */
 
 
-        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_25666__(
+        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_26017__(
         /*! ./modules/Board */
         "./src/modules/Board.ts");
       })();
@@ -1075,8 +1085,8 @@ board.waitForContentReady()
         switch (_a.label) {
             case 0:
                 board.enable();
-                w = elBoardContent.scrollWidth / window.devicePixelRatio;
-                h = elBoardContent.scrollHeight / window.devicePixelRatio;
+                w = elBoardContent.scrollWidth / board.scaleRatio;
+                h = elBoardContent.scrollHeight / board.scaleRatio;
                 widthScale = elBoard.clientWidth / w;
                 heightScale = elBoard.clientHeight / h;
                 scale = Math.min(widthScale, heightScale);

@@ -123,6 +123,14 @@ export class Board {
     this.elBoardContent.style.imageRendering = value;
   }
 
+  get scaleRatio() {
+    return this.options.scaleRatio;
+  }
+
+  set scaleRatio(value: number) {
+    this.options.scaleRatio = value;
+  }
+
   /**
    * Gets zoom factor after computing device ratio (DPI)
    *

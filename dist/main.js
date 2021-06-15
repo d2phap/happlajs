@@ -169,6 +169,16 @@ var Board = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Board.prototype, "scaleRatio", {
+        get: function () {
+            return this.options.scaleRatio;
+        },
+        set: function (value) {
+            this.options.scaleRatio = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Board.prototype, "zoomFactor", {
         /**
          * Gets zoom factor after computing device ratio (DPI)

@@ -42,6 +42,8 @@ export declare class Board {
     constructor(board: HTMLElement, boardContent: HTMLElement, options?: BoardOptions);
     get imageRendering(): InterpolationMode;
     set imageRendering(value: InterpolationMode);
+    get scaleRatio(): number;
+    set scaleRatio(value: number);
     /**
      * Gets zoom factor after computing device ratio (DPI)
      *

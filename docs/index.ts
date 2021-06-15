@@ -47,8 +47,8 @@ board.waitForContentReady()
   .then(async () => {
     board.enable();
 
-    const w = elBoardContent.scrollWidth / window.devicePixelRatio;
-    const h = elBoardContent.scrollHeight / window.devicePixelRatio;
+    const w = elBoardContent.scrollWidth / board.scaleRatio;
+    const h = elBoardContent.scrollHeight / board.scaleRatio;
 
     const widthScale = elBoard.clientWidth / w;
     const heightScale = elBoard.clientHeight / h;
