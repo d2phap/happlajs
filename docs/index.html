@@ -40,9 +40,9 @@
       max-height: 100vh;
       width: 100vw;
       height: 100vh;
-      background-color: #fff;
+      background-color: #000;
 
-      background-image: conic-gradient(#f2f2f2 25%, #fff4 0 50%, #f2f2f2 0 75%, #fff4 0);
+      background-image: conic-gradient(#333 25%, #fff4 0 50%, #333 0 75%, #fff4 0);
       background-size: 20px 20px;
     }
 
@@ -50,10 +50,15 @@
       outline: none;
     }
 
-    #boardContent {
-      /* background-color: bisque; */
-      display: inline-flex;
+    #wrapper {
       opacity: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #boardContent {
+      display: inline-flex;
+      /* background-color: bisque; */
       /* align-items: center;
       justify-content: center; */
     }
@@ -74,15 +79,18 @@
     <div>Height: <span id="elHeight"></span></div>
   </div>
   <div id="board" tabindex="0">
-    <div id="boardContent">
-      <img src="https://www.kirupa.com/images/kirupa_sig.png">
-      <!-- <img id="img" src="https://c.wallhere.com/photos/49/41/anime_anime_boys_anime_men_Black_Clover_Asta_Yuno_Noelle_Silva_Yami_Sukehiro-1966873.jpg!d" /> -->
-      <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
-      <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
-      <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
-      <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
-      <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
-      <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
+    <div id="wrapper">
+      <div id="boardContent">
+        <!-- <img src="https://www.kirupa.com/images/kirupa_sig.png"> -->
+        <!-- <img id="img" src="https://c.wallhere.com/photos/49/41/anime_anime_boys_anime_men_Black_Clover_Asta_Yuno_Noelle_Silva_Yami_Sukehiro-1966873.jpg!d" /> -->
+        <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/ed/016vallesmarineris_reduced0.5.jpg" />
+        <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
+        <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
+        <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
+        <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
+        <!-- <img src="https://cdn.shopify.com/s/files/1/0496/1029/files/Freesample.svg" /> -->
+      </div>
     </div>
   </div>
 

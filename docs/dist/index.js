@@ -477,6 +477,7 @@
 
               this.domMatrix.e += x;
               this.domMatrix.f += y;
+              this.options.onPanning(this.domMatrix.e, this.domMatrix.f);
               this.applyTransform();
             };
 
@@ -513,7 +514,8 @@
             };
 
             Board.prototype.startMoving = function () {
-              var speed = Math.ceil(this.elBoardContent.clientWidth / 100);
+              var maxSize = Math.max(this.elBoardContent.clientWidth, this.elBoardContent.clientHeight);
+              var speed = Math.ceil(maxSize / 300);
               var x = 0;
               var y = 0;
 
@@ -698,12 +700,12 @@
           \********************************/
 
         /***/
-        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_24799__) => {
-          __nested_webpack_require_24799__.r(__webpack_exports__);
+        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_24954__) => {
+          __nested_webpack_require_24954__.r(__webpack_exports__);
           /* harmony export */
 
 
-          __nested_webpack_require_24799__.d(__webpack_exports__, {
+          __nested_webpack_require_24954__.d(__webpack_exports__, {
             /* harmony export */
             "pause": () =>
             /* binding */
@@ -747,7 +749,7 @@
 
       /******/
 
-      function __nested_webpack_require_26032__(moduleId) {
+      function __nested_webpack_require_26187__(moduleId) {
         /******/
         // Check if module is in cache
 
@@ -785,7 +787,7 @@
 
         /******/
 
-        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_26032__);
+        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_26187__);
         /******/
 
         /******/
@@ -813,11 +815,11 @@
         // define getter functions for harmony exports
 
         /******/
-        __nested_webpack_require_26032__.d = (exports, definition) => {
+        __nested_webpack_require_26187__.d = (exports, definition) => {
           /******/
           for (var key in definition) {
             /******/
-            if (__nested_webpack_require_26032__.o(definition, key) && !__nested_webpack_require_26032__.o(exports, key)) {
+            if (__nested_webpack_require_26187__.o(definition, key) && !__nested_webpack_require_26187__.o(exports, key)) {
               /******/
               Object.defineProperty(exports, key, {
                 enumerable: true,
@@ -845,7 +847,7 @@
 
       (() => {
         /******/
-        __nested_webpack_require_26032__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+        __nested_webpack_require_26187__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
         /******/
 
       })();
@@ -863,7 +865,7 @@
         // define __esModule on exports
 
         /******/
-        __nested_webpack_require_26032__.r = exports => {
+        __nested_webpack_require_26187__.r = exports => {
           /******/
           if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
             /******/
@@ -894,11 +896,11 @@
         /*!*********************!*\
           !*** ./src/main.ts ***!
           \*********************/
-        __nested_webpack_require_26032__.r(__webpack_exports__);
+        __nested_webpack_require_26187__.r(__webpack_exports__);
         /* harmony export */
 
 
-        __nested_webpack_require_26032__.d(__webpack_exports__, {
+        __nested_webpack_require_26187__.d(__webpack_exports__, {
           /* harmony export */
           "Board": () =>
           /* reexport safe */
@@ -914,7 +916,7 @@
         /* harmony import */
 
 
-        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_26032__(
+        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_26187__(
         /*! ./modules/Board */
         "./src/modules/Board.ts");
       })();
@@ -1046,6 +1048,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 // @ts-nocheck
 
 var elBoard = document.getElementById('board');
+var elWrapper = document.getElementById('wrapper');
 var elBoardContent = document.getElementById('boardContent');
 var elScaleRatio = document.getElementById('elScaleRatio');
 var elZoom = document.getElementById('elZoom');
@@ -1058,16 +1061,16 @@ var onAfterZoomChanged = function (factor, x, y) {
     elZoom.innerText = factor;
     elX.innerText = x;
     elY.innerText = y;
-    elWidth.innerText = elBoardContent.clientWidth * factor;
-    elHeight.innerText = elBoardContent.clientHeight * factor;
+    elWidth.innerText = elBoardContent.clientWidth * factor + "px (" + elBoardContent.clientWidth + "px)";
+    elHeight.innerText = elBoardContent.clientHeight * factor + "px (" + elBoardContent.clientHeight + "px)";
 };
 var onPanning = function (x, y) {
     elX.innerText = x;
     elY.innerText = y;
 };
 var onBeforeContentReady = function () {
-    elBoardContent.style.opacity = 0;
-    elBoardContent.style.transition = 'opacity ease 5000ms';
+    elWrapper.style.opacity = 0;
+    elWrapper.style.transition = 'opacity ease 500ms';
 };
 var onContentReady = function () {
     // elBoardContent.style.opacity = 1;
@@ -1098,7 +1101,7 @@ board.waitForContentReady()
             case 1:
                 _a.sent();
                 board.zoomTo(scale, x, y);
-                elBoardContent.style.opacity = 1;
+                elWrapper.style.opacity = 1;
                 return [2 /*return*/];
         }
     });

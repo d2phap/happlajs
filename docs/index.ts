@@ -2,6 +2,7 @@
 import { Board, InterpolationMode, PanEventFunction, ZoomEventFunction } from '@d2phap/happla';
 
 const elBoard = document.getElementById('board');
+const elWrapper = document.getElementById('wrapper');
 const elBoardContent = document.getElementById('boardContent');
 
 const elScaleRatio = document.getElementById('elScaleRatio');
@@ -17,8 +18,8 @@ const onAfterZoomChanged: ZoomEventFunction = (factor: number, x: number, y: num
   elZoom.innerText = factor;
   elX.innerText = x;
   elY.innerText = y;
-  elWidth.innerText = elBoardContent.clientWidth * factor;
-  elHeight.innerText = elBoardContent.clientHeight * factor;
+  elWidth.innerText = `${elBoardContent.clientWidth * factor}px (${elBoardContent.clientWidth}px)`;
+  elHeight.innerText = `${elBoardContent.clientHeight * factor}px (${elBoardContent.clientHeight}px)`;
 };
 
 const onPanning: PanEventFunction = (x: number, y: number) => {
@@ -27,8 +28,8 @@ const onPanning: PanEventFunction = (x: number, y: number) => {
 };
 
 const onBeforeContentReady = () => {
-  elBoardContent.style.opacity = 0;
-  elBoardContent.style.transition = 'opacity ease 5000ms';
+  elWrapper.style.opacity = 0;
+  elWrapper.style.transition = 'opacity ease 500ms';
 };
 
 const onContentReady = () => {
@@ -63,7 +64,7 @@ board.waitForContentReady()
     await board.panTo(-w/2, -h/2);
     board.zoomTo(scale, x, y);
 
-    elBoardContent.style.opacity = 1;
+    elWrapper.style.opacity = 1;
   });
 
 // const img = document.getElementById('img');

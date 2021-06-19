@@ -274,6 +274,8 @@ export class Board {
     this.domMatrix.e += x;
     this.domMatrix.f += y;
 
+    this.options.onPanning(this.domMatrix.e, this.domMatrix.f);
+
     this.applyTransform();
   }
 
@@ -326,7 +328,8 @@ export class Board {
   }
 
   private startMoving() {
-    const speed = Math.ceil(this.elBoardContent.clientWidth / 100);
+    const maxSize = Math.max(this.elBoardContent.clientWidth, this.elBoardContent.clientHeight);
+    const speed = Math.ceil(maxSize / 300);
     let x = 0;
     let y = 0;
 

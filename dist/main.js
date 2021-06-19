@@ -304,6 +304,7 @@ var Board = /** @class */ (function () {
         // Update the transform coordinates with the distance from origin and current position
         this.domMatrix.e += x;
         this.domMatrix.f += y;
+        this.options.onPanning(this.domMatrix.e, this.domMatrix.f);
         this.applyTransform();
     };
     Board.prototype.zoomDistance = function (delta, dx, dy, duration) {
@@ -341,7 +342,8 @@ var Board = /** @class */ (function () {
         this.applyTransform(duration);
     };
     Board.prototype.startMoving = function () {
-        var speed = Math.ceil(this.elBoardContent.clientWidth / 100);
+        var maxSize = Math.max(this.elBoardContent.clientWidth, this.elBoardContent.clientHeight);
+        var speed = Math.ceil(maxSize / 300);
         var x = 0;
         var y = 0;
         if (this.arrowLeftDown && !this.arrowRightDown) {
