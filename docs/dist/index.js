@@ -540,7 +540,7 @@
             // #region Public functions
 
 
-            Board.prototype.panTo = function (x, y) {
+            Board.prototype.panTo = function (x, y, duration) {
               return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                   switch (_a.label) {
@@ -549,7 +549,7 @@
                       this.domMatrix.f = y;
                       return [4
                       /*yield*/
-                      , this.applyTransform(300)];
+                      , this.applyTransform(duration)];
 
                     case 1:
                       _a.sent();
@@ -698,12 +698,12 @@
           \********************************/
 
         /***/
-        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_24784__) => {
-          __nested_webpack_require_24784__.r(__webpack_exports__);
+        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_24799__) => {
+          __nested_webpack_require_24799__.r(__webpack_exports__);
           /* harmony export */
 
 
-          __nested_webpack_require_24784__.d(__webpack_exports__, {
+          __nested_webpack_require_24799__.d(__webpack_exports__, {
             /* harmony export */
             "pause": () =>
             /* binding */
@@ -747,7 +747,7 @@
 
       /******/
 
-      function __nested_webpack_require_26017__(moduleId) {
+      function __nested_webpack_require_26032__(moduleId) {
         /******/
         // Check if module is in cache
 
@@ -785,7 +785,7 @@
 
         /******/
 
-        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_26017__);
+        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_26032__);
         /******/
 
         /******/
@@ -813,11 +813,11 @@
         // define getter functions for harmony exports
 
         /******/
-        __nested_webpack_require_26017__.d = (exports, definition) => {
+        __nested_webpack_require_26032__.d = (exports, definition) => {
           /******/
           for (var key in definition) {
             /******/
-            if (__nested_webpack_require_26017__.o(definition, key) && !__nested_webpack_require_26017__.o(exports, key)) {
+            if (__nested_webpack_require_26032__.o(definition, key) && !__nested_webpack_require_26032__.o(exports, key)) {
               /******/
               Object.defineProperty(exports, key, {
                 enumerable: true,
@@ -845,7 +845,7 @@
 
       (() => {
         /******/
-        __nested_webpack_require_26017__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+        __nested_webpack_require_26032__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
         /******/
 
       })();
@@ -863,7 +863,7 @@
         // define __esModule on exports
 
         /******/
-        __nested_webpack_require_26017__.r = exports => {
+        __nested_webpack_require_26032__.r = exports => {
           /******/
           if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
             /******/
@@ -894,11 +894,11 @@
         /*!*********************!*\
           !*** ./src/main.ts ***!
           \*********************/
-        __nested_webpack_require_26017__.r(__webpack_exports__);
+        __nested_webpack_require_26032__.r(__webpack_exports__);
         /* harmony export */
 
 
-        __nested_webpack_require_26017__.d(__webpack_exports__, {
+        __nested_webpack_require_26032__.d(__webpack_exports__, {
           /* harmony export */
           "Board": () =>
           /* reexport safe */
@@ -914,7 +914,7 @@
         /* harmony import */
 
 
-        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_26017__(
+        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_26032__(
         /*! ./modules/Board */
         "./src/modules/Board.ts");
       })();
@@ -1066,8 +1066,8 @@ var onPanning = function (x, y) {
     elY.innerText = y;
 };
 var onBeforeContentReady = function () {
-    elBoard.style.opacity = 0;
-    elBoard.style.transition = 'opacity ease 500ms';
+    elBoardContent.style.opacity = 0;
+    elBoardContent.style.transition = 'opacity ease 5000ms';
 };
 var onContentReady = function () {
     // elBoardContent.style.opacity = 1;
@@ -1097,8 +1097,8 @@ board.waitForContentReady()
                 return [4 /*yield*/, board.panTo(-w / 2, -h / 2)];
             case 1:
                 _a.sent();
-                board.zoomTo(scale, x, y, 800);
-                elBoard.style.opacity = 1;
+                board.zoomTo(scale, x, y);
+                elBoardContent.style.opacity = 1;
                 return [2 /*return*/];
         }
     });

@@ -354,11 +354,11 @@ export class Board {
 
 
   // #region Public functions
-  public async panTo(x: number, y: number) {
+  public async panTo(x: number, y: number, duration?: number) {
     this.domMatrix.e = x;
     this.domMatrix.f = y;
 
-    await this.applyTransform(300);
+    await this.applyTransform(duration);
   }
 
   public async zoomTo(factor: number, x?: number, y?: number, duration?: number) {

@@ -365,14 +365,14 @@ var Board = /** @class */ (function () {
     };
     // #endregion
     // #region Public functions
-    Board.prototype.panTo = function (x, y) {
+    Board.prototype.panTo = function (x, y, duration) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         this.domMatrix.e = x;
                         this.domMatrix.f = y;
-                        return [4 /*yield*/, this.applyTransform(300)];
+                        return [4 /*yield*/, this.applyTransform(duration)];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];

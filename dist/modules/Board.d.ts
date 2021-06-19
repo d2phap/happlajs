@@ -62,7 +62,7 @@ export declare class Board {
     private zoomDistance;
     private startMoving;
     private stopMoving;
-    panTo(x: number, y: number): Promise<void>;
+    panTo(x: number, y: number, duration?: number): Promise<void>;
     zoomTo(factor: number, x?: number, y?: number, duration?: number): Promise<void>;
     applyTransform(duration?: number): Promise<unknown>;
     enable(): void;

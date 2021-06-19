@@ -27,8 +27,8 @@ const onPanning: PanEventFunction = (x: number, y: number) => {
 };
 
 const onBeforeContentReady = () => {
-  elBoard.style.opacity = 0;
-  elBoard.style.transition = 'opacity ease 500ms';
+  elBoardContent.style.opacity = 0;
+  elBoardContent.style.transition = 'opacity ease 5000ms';
 };
 
 const onContentReady = () => {
@@ -61,9 +61,9 @@ board.waitForContentReady()
     const y = (elBoard.offsetHeight - (h * scale)) / 2;
 
     await board.panTo(-w/2, -h/2);
-    board.zoomTo(scale, x, y, 800);
+    board.zoomTo(scale, x, y);
 
-    elBoard.style.opacity = 1;
+    elBoardContent.style.opacity = 1;
   });
 
 // const img = document.getElementById('img');
