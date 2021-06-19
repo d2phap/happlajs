@@ -342,8 +342,7 @@ var Board = /** @class */ (function () {
         this.applyTransform(duration);
     };
     Board.prototype.startMoving = function () {
-        var maxSize = Math.max(this.elBoardContent.clientWidth, this.elBoardContent.clientHeight);
-        var speed = Math.ceil(maxSize / 300);
+        var speed = 20;
         var x = 0;
         var y = 0;
         if (this.arrowLeftDown && !this.arrowRightDown) {
@@ -415,18 +414,16 @@ var Board = /** @class */ (function () {
             if (duration > 0) {
                 var transition = "transform " + duration + "ms ease, opacity " + duration + "ms ease";
                 _this.elBoardContent.style.transition = transition;
-                setTimeout(function () {
-                    // raise event
-                    _this.options.onAfterTransformed(_this.domMatrix);
-                    resolve(undefined);
-                }, duration);
+                setTimeout(resolve, duration);
             }
             else {
                 _this.elBoardContent.style.transition = '';
-                // raise event
-                _this.options.onAfterTransformed(_this.domMatrix);
                 resolve(undefined);
             }
+        })
+            .then(function () {
+            // raise event
+            _this.options.onAfterTransformed(_this.domMatrix);
         });
     };
     Board.prototype.enable = function () {

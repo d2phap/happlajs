@@ -328,8 +328,7 @@ export class Board {
   }
 
   private startMoving() {
-    const maxSize = Math.max(this.elBoardContent.clientWidth, this.elBoardContent.clientHeight);
-    const speed = Math.ceil(maxSize / 300);
+    const speed = 20;
     let x = 0;
     let y = 0;
 
@@ -395,20 +394,17 @@ export class Board {
         const transition = `transform ${duration}ms ease, opacity ${duration}ms ease`;
         this.elBoardContent.style.transition = transition;
 
-        setTimeout(() => {
-          // raise event
-          this.options.onAfterTransformed(this.domMatrix);
-          resolve(undefined);
-        }, duration);
+        setTimeout(resolve, duration);
       }
       else {
         this.elBoardContent.style.transition = '';
-
-        // raise event
-        this.options.onAfterTransformed(this.domMatrix);
         resolve(undefined);
       }
-    });
+    })
+      .then(() => {
+        // raise event
+        this.options.onAfterTransformed(this.domMatrix);
+      });
   }
 
   public enable() {
