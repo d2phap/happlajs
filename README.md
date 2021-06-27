@@ -1,48 +1,73 @@
-# 📦 NPM Package template
+# 🦛 Happla
+JavaScript library for zooming and panning HTML content. Live demo: https://d2phap.github.io/happla
 
-NPM package template with Typescript, Webpack, SCSS, EsLint, Babel
 
-Package url: https://www.npmjs.com/package/@d2phap/happla
-
-Try the package:
+## 🚀 Getting started
+Run the command
 ```
 npm i @d2phap/happla
 ```
 
-## ☢️ Development note!
-Even though I set up URL alias in `tsconfig.json` and `webpack.config.js`, you should always use relative path for importing Js module, because TypeScript does not support resolving alias path to relative path. Source:
-- https://github.com/microsoft/TypeScript/issues/26722#issuecomment-580975983 (closed)
-- https://github.com/microsoft/TypeScript/issues/30952 (open)
+- NPM package: https://www.npmjs.com/package/@d2phap/happla
+- Github source: https://github.com/d2phap/happla
 
-Instead of this:
+## 🏃‍♂️ Usage
+Please see [Docs project](https://github.com/d2phap/happla/tree/main/docs) for full example.
+
+### HTML template
+```html
+<body>
+  <div id="board" tabindex="0">
+    <div id="wrapper">
+      <div id="boardContent">
+        <!-- Your content here -->
+        <img src="https://imageglass.org/img/iglogo.svg" alt="ImageGlass logo" />
+      </div>
+    </div>
+  </div>
+</body>
+```
+
+### CSS
+```scss
+#board { width: 500px; height: 500px; }
+#wrapper { width: 100%; height: 100%; }
+#boardContent { display: inline-flex; }
+#boardContent * {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+```
+
+### JavaScript
 ```ts
-import { Person } from '@/module/person';
+// import library
+import { Board } from '@d2phap/happla';
+
+// get HTML elements
+const elBoard = document.getElementById('board');
+const elBoardContent = document.getElementById('boardContent');
+
+// declare the board
+const board = new Board(elBoard, elBoardContent, {
+  // your configs here
+});
+
+// enable functions of the board
+board.enable();
 ```
 
-Do this:
+## 🧱 Config options
 ```ts
-import { Person } from './module/person';
+// To be updated
 ```
 
-## 🚀 Getting started
-```bash
-# 1. Install dependencies
-npm i
 
-# 2. Start development server
-npm start
-
-# 3. Build and compile for production
-npm run build
-
-# 4. Commit your changes
-
-# 5. Bump package version
-npm version <version_number>
-
-# 6. Publish your package
-npm publish
+## 🏹 Methods
+```ts
+// To be updated
 ```
+
 
 ## 💖 Support my open source work
 <a href="https://www.patreon.com/d2phap" target="_blank" title="Become a patron">
@@ -52,7 +77,6 @@ npm publish
 <a href="https://www.paypal.me/d2phap" target="_blank" title="Buy me a beer?">
 <img src="https://img.shields.io/badge/PayPal-Donate%20$10%20-0070ba.svg?maxAge=3600" height="30" alt="Buy me a beer?">
 </a>
-<a href="https://app.fossa.com/projects/git%2Bgithub.com%2Fd2phap%2Fhappla?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fd2phap%2Fhappla.svg?type=shield"/></a>
 
 <a href="https://github.com/sponsors/d2phap" target="_blank" title="Become a sponsor">
 <img src="https://img.shields.io/badge/Github-@d2phap-24292e.svg?maxAge=3600" height="30" alt="Become a sponsor">
@@ -73,5 +97,14 @@ Thanks for your gratitude and finance help!
 
 
 
-## License
+## ⚖ License
+See https://github.com/d2phap/happla/blob/main/LICENSE
+
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fd2phap%2Fhappla.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fd2phap%2Fhappla?ref=badge_large)
+
+
+## 💪 Other open source projects
+- `ImageGlass` - A lightweight, versatile image viewer: https://imageglass.org
+- `Fluent Reveal Effect Js` (Fluent Design System): https://github.com/d2phap/fluent-reveal-effect
+- `Vue File selector` (Fluent Design System): https://github.com/d2phap/vue-file-selector
+- `FileWatcherEx` - A wrapper of C# FileSystemWatcher for Windows: https://github.com/d2phap/FileWatcherEx
