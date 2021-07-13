@@ -694,12 +694,12 @@
           \********************************/
 
         /***/
-        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_24702__) => {
-          __nested_webpack_require_24702__.r(__webpack_exports__);
+        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_24707__) => {
+          __nested_webpack_require_24707__.r(__webpack_exports__);
           /* harmony export */
 
 
-          __nested_webpack_require_24702__.d(__webpack_exports__, {
+          __nested_webpack_require_24707__.d(__webpack_exports__, {
             /* harmony export */
             "pause": () =>
             /* binding */
@@ -743,7 +743,7 @@
 
       /******/
 
-      function __nested_webpack_require_25935__(moduleId) {
+      function __nested_webpack_require_25940__(moduleId) {
         /******/
         // Check if module is in cache
 
@@ -781,7 +781,7 @@
 
         /******/
 
-        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_25935__);
+        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_25940__);
         /******/
 
         /******/
@@ -809,11 +809,11 @@
         // define getter functions for harmony exports
 
         /******/
-        __nested_webpack_require_25935__.d = (exports, definition) => {
+        __nested_webpack_require_25940__.d = (exports, definition) => {
           /******/
           for (var key in definition) {
             /******/
-            if (__nested_webpack_require_25935__.o(definition, key) && !__nested_webpack_require_25935__.o(exports, key)) {
+            if (__nested_webpack_require_25940__.o(definition, key) && !__nested_webpack_require_25940__.o(exports, key)) {
               /******/
               Object.defineProperty(exports, key, {
                 enumerable: true,
@@ -841,7 +841,7 @@
 
       (() => {
         /******/
-        __nested_webpack_require_25935__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+        __nested_webpack_require_25940__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
         /******/
 
       })();
@@ -859,7 +859,7 @@
         // define __esModule on exports
 
         /******/
-        __nested_webpack_require_25935__.r = exports => {
+        __nested_webpack_require_25940__.r = exports => {
           /******/
           if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
             /******/
@@ -890,11 +890,11 @@
         /*!*********************!*\
           !*** ./src/main.ts ***!
           \*********************/
-        __nested_webpack_require_25935__.r(__webpack_exports__);
+        __nested_webpack_require_25940__.r(__webpack_exports__);
         /* harmony export */
 
 
-        __nested_webpack_require_25935__.d(__webpack_exports__, {
+        __nested_webpack_require_25940__.d(__webpack_exports__, {
           /* harmony export */
           "Board": () =>
           /* reexport safe */
@@ -910,7 +910,7 @@
         /* harmony import */
 
 
-        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_25935__(
+        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_25940__(
         /*! ./modules/Board */
         "./src/modules/Board.ts");
       })();
@@ -1064,7 +1064,7 @@ var onPanning = function (x, y) {
 };
 var onBeforeContentReady = function () {
     elWrapper.style.opacity = 0;
-    elWrapper.style.transition = 'opacity ease 500ms';
+    elWrapper.style.transition = 'opacity ease 0ms';
 };
 var onContentReady = function () {
     // elBoardContent.style.opacity = 1;

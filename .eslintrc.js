@@ -33,5 +33,6 @@ module.exports = {
     '@typescript-eslint/lines-between-class-members': 'off',
     '@typescript-eslint/no-unused-vars': 'warn',
     '@typescript-eslint/brace-style': 'off',
+    'linebreak-style': 'off',
   },
 };

@@ -29,7 +29,7 @@ const onPanning: PanEventFunction = (x: number, y: number) => {
 
 const onBeforeContentReady = () => {
   elWrapper.style.opacity = 0;
-  elWrapper.style.transition = 'opacity ease 500ms';
+  elWrapper.style.transition = 'opacity ease 0ms';
 };
 
 const onContentReady = () => {
