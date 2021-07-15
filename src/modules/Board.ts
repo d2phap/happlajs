@@ -275,7 +275,7 @@ export class Board {
   private updateImageRendering() {
     switch (this.imageRendering) {
       case InterpolationMode.Auto:
-        if (this.scaleRatio <= 100) {
+        if (this.zoomFactor <= 1) {
           this.elBoardContent.style.imageRendering = InterpolationMode.CrispEdges;
         }
         else {
