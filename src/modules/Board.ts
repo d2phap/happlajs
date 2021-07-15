@@ -121,7 +121,6 @@ export class Board {
 
   set imageRendering(value: InterpolationMode) {
     this.options.imageRendering = value;
-    // this.elBoardContent.style.imageRendering = value;
 
     this.updateImageRendering();
   }
@@ -404,6 +403,7 @@ export class Board {
     // raise event onAfterZoomChanged
     this.options.onAfterZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
 
+    this.updateImageRendering();
     await this.applyTransform(duration);
   }
 

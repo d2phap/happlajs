@@ -305,8 +305,7 @@
                 return this.options.imageRendering;
               },
               set: function (value) {
-                this.options.imageRendering = value; // this.elBoardContent.style.imageRendering = value;
-
+                this.options.imageRendering = value;
                 this.updateImageRendering();
               },
               enumerable: false,
@@ -599,6 +598,7 @@
                       this.domMatrix.f = y || 0; // raise event onAfterZoomChanged
 
                       this.options.onAfterZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
+                      this.updateImageRendering();
                       return [4
                       /*yield*/
                       , this.applyTransform(duration)];
@@ -714,12 +714,12 @@
           \********************************/
 
         /***/
-        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_25503__) => {
-          __nested_webpack_require_25503__.r(__webpack_exports__);
+        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_25500__) => {
+          __nested_webpack_require_25500__.r(__webpack_exports__);
           /* harmony export */
 
 
-          __nested_webpack_require_25503__.d(__webpack_exports__, {
+          __nested_webpack_require_25500__.d(__webpack_exports__, {
             /* harmony export */
             "pause": () =>
             /* binding */
@@ -763,7 +763,7 @@
 
       /******/
 
-      function __nested_webpack_require_26736__(moduleId) {
+      function __nested_webpack_require_26733__(moduleId) {
         /******/
         // Check if module is in cache
 
@@ -801,7 +801,7 @@
 
         /******/
 
-        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_26736__);
+        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_26733__);
         /******/
 
         /******/
@@ -829,11 +829,11 @@
         // define getter functions for harmony exports
 
         /******/
-        __nested_webpack_require_26736__.d = (exports, definition) => {
+        __nested_webpack_require_26733__.d = (exports, definition) => {
           /******/
           for (var key in definition) {
             /******/
-            if (__nested_webpack_require_26736__.o(definition, key) && !__nested_webpack_require_26736__.o(exports, key)) {
+            if (__nested_webpack_require_26733__.o(definition, key) && !__nested_webpack_require_26733__.o(exports, key)) {
               /******/
               Object.defineProperty(exports, key, {
                 enumerable: true,
@@ -861,7 +861,7 @@
 
       (() => {
         /******/
-        __nested_webpack_require_26736__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+        __nested_webpack_require_26733__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
         /******/
 
       })();
@@ -879,7 +879,7 @@
         // define __esModule on exports
 
         /******/
-        __nested_webpack_require_26736__.r = exports => {
+        __nested_webpack_require_26733__.r = exports => {
           /******/
           if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
             /******/
@@ -910,11 +910,11 @@
         /*!*********************!*\
           !*** ./src/main.ts ***!
           \*********************/
-        __nested_webpack_require_26736__.r(__webpack_exports__);
+        __nested_webpack_require_26733__.r(__webpack_exports__);
         /* harmony export */
 
 
-        __nested_webpack_require_26736__.d(__webpack_exports__, {
+        __nested_webpack_require_26733__.d(__webpack_exports__, {
           /* harmony export */
           "Board": () =>
           /* reexport safe */
@@ -930,7 +930,7 @@
         /* harmony import */
 
 
-        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_26736__(
+        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_26733__(
         /*! ./modules/Board */
         "./src/modules/Board.ts");
       })();

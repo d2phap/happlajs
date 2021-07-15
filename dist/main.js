@@ -165,7 +165,6 @@ var Board = /** @class */ (function () {
         },
         set: function (value) {
             this.options.imageRendering = value;
-            // this.elBoardContent.style.imageRendering = value;
             this.updateImageRendering();
         },
         enumerable: false,
@@ -415,6 +414,7 @@ var Board = /** @class */ (function () {
                         this.domMatrix.f = y || 0;
                         // raise event onAfterZoomChanged
                         this.options.onAfterZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
+                        this.updateImageRendering();
                         return [4 /*yield*/, this.applyTransform(duration)];
                     case 1:
                         _a.sent();
