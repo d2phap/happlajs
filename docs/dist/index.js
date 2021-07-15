@@ -236,7 +236,7 @@
           (function (InterpolationMode) {
             InterpolationMode["Pixelated"] = "pixelated";
             InterpolationMode["Auto"] = "auto";
-            InterpolationMode["CrispEdges"] = "crisp-edges";
+            InterpolationMode["CrispEdges"] = "-webkit-optimize-contrast";
           })(InterpolationMode || (InterpolationMode = {}));
 
           var Board =
@@ -278,6 +278,7 @@
               this.startMoving = this.startMoving.bind(this);
               this.stopMoving = this.stopMoving.bind(this);
               this.dpi = this.dpi.bind(this);
+              this.updateImageRendering = this.updateImageRendering.bind(this);
               this.enable = this.enable.bind(this);
               this.disable = this.disable.bind(this);
               this.zoomTo = this.zoomTo.bind(this);
@@ -304,8 +305,9 @@
                 return this.options.imageRendering;
               },
               set: function (value) {
-                this.options.imageRendering = value;
-                this.elBoardContent.style.imageRendering = value;
+                this.options.imageRendering = value; // this.elBoardContent.style.imageRendering = value;
+
+                this.updateImageRendering();
               },
               enumerable: false,
               configurable: true
@@ -465,6 +467,23 @@
               return value / this.options.scaleRatio;
             };
 
+            Board.prototype.updateImageRendering = function () {
+              switch (this.imageRendering) {
+                case InterpolationMode.Auto:
+                  if (this.zoomFactor <= 1.0) {
+                    this.elBoardContent.style.imageRendering = InterpolationMode.CrispEdges;
+                  } else {
+                    this.elBoardContent.style.imageRendering = InterpolationMode.Pixelated;
+                  }
+
+                  break;
+
+                default:
+                  this.elBoardContent.style.imageRendering = this.imageRendering;
+                  break;
+              }
+            };
+
             Board.prototype.moveDistance = function (x, y) {
               if (x === void 0) {
                 x = 0;
@@ -510,6 +529,7 @@
               this.domMatrix = new DOMMatrix().translateSelf(newX, newY).scaleSelf(newDelta).translateSelf(-newX, -newY).multiplySelf(this.domMatrix); // raise event onAfterZoomChanged
 
               this.options.onAfterZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
+              this.updateImageRendering();
               this.applyTransform(duration);
             };
 
@@ -694,12 +714,12 @@
           \********************************/
 
         /***/
-        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_24707__) => {
-          __nested_webpack_require_24707__.r(__webpack_exports__);
+        (__unused_webpack_module, __webpack_exports__, __nested_webpack_require_25503__) => {
+          __nested_webpack_require_25503__.r(__webpack_exports__);
           /* harmony export */
 
 
-          __nested_webpack_require_24707__.d(__webpack_exports__, {
+          __nested_webpack_require_25503__.d(__webpack_exports__, {
             /* harmony export */
             "pause": () =>
             /* binding */
@@ -743,7 +763,7 @@
 
       /******/
 
-      function __nested_webpack_require_25940__(moduleId) {
+      function __nested_webpack_require_26736__(moduleId) {
         /******/
         // Check if module is in cache
 
@@ -781,7 +801,7 @@
 
         /******/
 
-        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_25940__);
+        __webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_26736__);
         /******/
 
         /******/
@@ -809,11 +829,11 @@
         // define getter functions for harmony exports
 
         /******/
-        __nested_webpack_require_25940__.d = (exports, definition) => {
+        __nested_webpack_require_26736__.d = (exports, definition) => {
           /******/
           for (var key in definition) {
             /******/
-            if (__nested_webpack_require_25940__.o(definition, key) && !__nested_webpack_require_25940__.o(exports, key)) {
+            if (__nested_webpack_require_26736__.o(definition, key) && !__nested_webpack_require_26736__.o(exports, key)) {
               /******/
               Object.defineProperty(exports, key, {
                 enumerable: true,
@@ -841,7 +861,7 @@
 
       (() => {
         /******/
-        __nested_webpack_require_25940__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+        __nested_webpack_require_26736__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
         /******/
 
       })();
@@ -859,7 +879,7 @@
         // define __esModule on exports
 
         /******/
-        __nested_webpack_require_25940__.r = exports => {
+        __nested_webpack_require_26736__.r = exports => {
           /******/
           if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
             /******/
@@ -890,11 +910,11 @@
         /*!*********************!*\
           !*** ./src/main.ts ***!
           \*********************/
-        __nested_webpack_require_25940__.r(__webpack_exports__);
+        __nested_webpack_require_26736__.r(__webpack_exports__);
         /* harmony export */
 
 
-        __nested_webpack_require_25940__.d(__webpack_exports__, {
+        __nested_webpack_require_26736__.d(__webpack_exports__, {
           /* harmony export */
           "Board": () =>
           /* reexport safe */
@@ -910,7 +930,7 @@
         /* harmony import */
 
 
-        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_25940__(
+        var _modules_Board__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_26736__(
         /*! ./modules/Board */
         "./src/modules/Board.ts");
       })();
@@ -1076,7 +1096,7 @@ var board = new _d2phap_happla__WEBPACK_IMPORTED_MODULE_0__.Board(elBoard, elBoa
     onBeforeContentReady: onBeforeContentReady,
     onContentReady: onContentReady,
 });
-board.imageRendering = _d2phap_happla__WEBPACK_IMPORTED_MODULE_0__.InterpolationMode.Pixelated;
+board.imageRendering = _d2phap_happla__WEBPACK_IMPORTED_MODULE_0__.InterpolationMode.Auto;
 board.waitForContentReady()
     .then(function () { return __awaiter(void 0, void 0, void 0, function () {
     var w, h, widthScale, heightScale, scale, x, y;

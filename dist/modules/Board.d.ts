@@ -4,7 +4,7 @@ export declare type PanEventFunction = (x: number, y: number) => void;
 export declare enum InterpolationMode {
     Pixelated = "pixelated",
     Auto = "auto",
-    CrispEdges = "crisp-edges"
+    CrispEdges = "-webkit-optimize-contrast"
 }
 export interface BoardOptions {
     allowZoom?: boolean;

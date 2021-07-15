@@ -7,7 +7,7 @@ export type PanEventFunction = (x: number, y: number) => void;
 export enum InterpolationMode {
   Pixelated = 'pixelated',
   Auto = 'auto',
-  CrispEdges = 'crisp-edges',
+  CrispEdges = '-webkit-optimize-contrast', // crisp-edges
 }
 
 export interface BoardOptions {
@@ -275,7 +275,7 @@ export class Board {
   private updateImageRendering() {
     switch (this.imageRendering) {
       case InterpolationMode.Auto:
-        if (this.zoomFactor <= 1) {
+        if (this.zoomFactor <= 1.0) {
           this.elBoardContent.style.imageRendering = InterpolationMode.CrispEdges;
         }
         else {
