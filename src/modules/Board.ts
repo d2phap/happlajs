@@ -88,6 +88,7 @@ export class Board {
     this.startMoving = this.startMoving.bind(this);
     this.stopMoving = this.stopMoving.bind(this);
     this.dpi = this.dpi.bind(this);
+    this.updateImageRendering = this.updateImageRendering.bind(this);
 
     this.enable = this.enable.bind(this);
     this.disable = this.disable.bind(this);
@@ -120,7 +121,9 @@ export class Board {
 
   set imageRendering(value: InterpolationMode) {
     this.options.imageRendering = value;
-    this.elBoardContent.style.imageRendering = value;
+    // this.elBoardContent.style.imageRendering = value;
+
+    this.updateImageRendering();
   }
 
   get scaleRatio() {
@@ -269,6 +272,23 @@ export class Board {
     return value / this.options.scaleRatio;
   }
 
+  private updateImageRendering() {
+    switch (this.imageRendering) {
+      case InterpolationMode.Auto:
+        if (this.scaleRatio <= 100) {
+          this.elBoardContent.style.imageRendering = InterpolationMode.CrispEdges;
+        }
+        else {
+          this.elBoardContent.style.imageRendering = InterpolationMode.Pixelated;
+        }
+        break;
+
+      default:
+        this.elBoardContent.style.imageRendering = this.imageRendering;
+        break;
+    }
+  }
+
   private moveDistance(x = 0, y = 0) {
     // Update the transform coordinates with the distance from origin and current position
     this.domMatrix.e += x;
@@ -324,6 +344,8 @@ export class Board {
     // raise event onAfterZoomChanged
     this.options.onAfterZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
 
+
+    this.updateImageRendering();
     this.applyTransform(duration);
   }
 

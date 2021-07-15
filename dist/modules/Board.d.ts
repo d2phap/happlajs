@@ -58,6 +58,7 @@ export declare class Board {
     private onKeyDown;
     private onKeyUp;
     private dpi;
+    private updateImageRendering;
     private moveDistance;
     private zoomDistance;
     private startMoving;

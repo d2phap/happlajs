@@ -138,6 +138,7 @@ var Board = /** @class */ (function () {
         this.startMoving = this.startMoving.bind(this);
         this.stopMoving = this.stopMoving.bind(this);
         this.dpi = this.dpi.bind(this);
+        this.updateImageRendering = this.updateImageRendering.bind(this);
         this.enable = this.enable.bind(this);
         this.disable = this.disable.bind(this);
         this.zoomTo = this.zoomTo.bind(this);
@@ -164,7 +165,8 @@ var Board = /** @class */ (function () {
         },
         set: function (value) {
             this.options.imageRendering = value;
-            this.elBoardContent.style.imageRendering = value;
+            // this.elBoardContent.style.imageRendering = value;
+            this.updateImageRendering();
         },
         enumerable: false,
         configurable: true
@@ -298,6 +300,21 @@ var Board = /** @class */ (function () {
     Board.prototype.dpi = function (value) {
         return value / this.options.scaleRatio;
     };
+    Board.prototype.updateImageRendering = function () {
+        switch (this.imageRendering) {
+            case InterpolationMode.Auto:
+                if (this.scaleRatio <= 100) {
+                    this.elBoardContent.style.imageRendering = InterpolationMode.CrispEdges;
+                }
+                else {
+                    this.elBoardContent.style.imageRendering = InterpolationMode.Pixelated;
+                }
+                break;
+            default:
+                this.elBoardContent.style.imageRendering = this.imageRendering;
+                break;
+        }
+    };
     Board.prototype.moveDistance = function (x, y) {
         if (x === void 0) { x = 0; }
         if (y === void 0) { y = 0; }
@@ -339,6 +356,7 @@ var Board = /** @class */ (function () {
             .multiplySelf(this.domMatrix);
         // raise event onAfterZoomChanged
         this.options.onAfterZoomChanged(this.zoomFactor, this.domMatrix.e, this.domMatrix.f);
+        this.updateImageRendering();
         this.applyTransform(duration);
     };
     Board.prototype.startMoving = function () {
