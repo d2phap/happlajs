@@ -1,2 +1,1 @@
-
-export * from './modules/Board';
+export * from './components/happla-viewer';
