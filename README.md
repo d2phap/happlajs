@@ -5,57 +5,12 @@ JavaScript library for zooming and panning HTML content. Live demo: https://d2ph
 ## 🚀 Getting started
 Run the command
 ```
-npm i @d2phap/happla
+npm i happlajs
 ```
 
-- NPM package: https://www.npmjs.com/package/@d2phap/happla
-- Github source: https://github.com/d2phap/happla
+- NPM package: https://www.npmjs.com/package/happlajs
+- Github source: https://github.com/d2phap/happlajs
 
-## 🏃‍♂️ Usage
-Please see [Docs project](https://github.com/d2phap/happla/tree/main/docs) for full example.
-
-### HTML template
-```html
-<body>
-  <div id="board" tabindex="0">
-    <div id="wrapper">
-      <div id="boardContent">
-        <!-- Your content here -->
-        <img src="https://imageglass.org/img/iglogo.svg" alt="ImageGlass logo" />
-      </div>
-    </div>
-  </div>
-</body>
-```
-
-### CSS
-```scss
-#board { width: 500px; height: 500px; }
-#wrapper { width: 100%; height: 100%; }
-#boardContent { display: inline-flex; }
-#boardContent * {
-  -webkit-user-drag: none;
-  user-select: none;
-}
-```
-
-### JavaScript
-```ts
-// import library
-import { Board } from '@d2phap/happla';
-
-// get HTML elements
-const elBoard = document.getElementById('board');
-const elBoardContent = document.getElementById('boardContent');
-
-// declare the board
-const board = new Board(elBoard, elBoardContent, {
-  // your configs here
-});
-
-// enable functions of the board
-board.enable();
-```
 
 ## 🧱 Config options
 ```ts
@@ -81,19 +36,6 @@ board.enable();
 <a href="https://github.com/sponsors/d2phap" target="_blank" title="Become a sponsor">
 <img src="https://img.shields.io/badge/Github-@d2phap-24292e.svg?maxAge=3600" height="30" alt="Become a sponsor">
 </a>
-
-
-### Cryptocurrency donation:
-
-```bash
-# Ethereum
-0xc19be8972809b6b989f3e4ba16595712ba8e0de4
-
-# Bitcoin
-1PcCezBmM3ahTzfBBi5KVWnnd3bCHbas8Z
-```
-
-Thanks for your gratitude and finance help!
 
 
 
