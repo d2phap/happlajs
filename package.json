@@ -2,7 +2,7 @@
   "name": "happlajs",
   "displayName": "JavaScript library for zooming and panning",
   "description": "JavaScript library for zooming and panning.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
