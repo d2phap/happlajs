@@ -1,5 +1,5 @@
 {
-  "name": "happla",
+  "name": "happlajs",
   "displayName": "JavaScript library for zooming and panning",
   "description": "JavaScript library for zooming and panning.",
   "version": "0.0.3",
@@ -23,13 +23,13 @@
   "author": "Duong Dieu Phap",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/d2phap/happla/issues"
+    "url": "https://github.com/d2phap/happlajs/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/d2phap/happla.git"
+    "url": "git+https://github.com/d2phap/happlajs.git"
   },
-  "homepage": "https://github.com/d2phap/happla",
+  "homepage": "https://github.com/d2phap/happlajs",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
